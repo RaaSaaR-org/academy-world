@@ -5,8 +5,11 @@
 //   node tools/robust-check.mjs [--dist <dir>] [--only phone,nowebgl2,ctx-restore,ctx-norestore,wasm,zone,glb,worker]
 //
 // Runs the production build on the CDN-like server (tools/lib/measure.mjs serveCdn):
-//   phone          412×915 touch phone, slow 4G, CPU 4×: the "needs mouse and keyboard" notice
-//                  shows within 1.5 s, after ≤ 50 KB
+//   phone          412×915 touch phone, slow 4G, CPU 4×, no ?discover. With src/discover/flags.ts
+//                  DISCOVER_DEFAULT_ON_TOUCH true (founder, 2026-10-23): the gate sends it to „Entdecken“
+//                  within 1.5 s, after ≤ 50 KB, without the "needs mouse and keyboard" notice, and Discover's
+//                  start card comes (its time is reported). With the flag false: that notice within 1.5 s,
+//                  after ≤ 50 KB
 //   nowebgl2       no WebGL2 (4G): the message shows after ≤ 30 KB
 //   ctx-restore    WebGL context lost and restored: while lost the frame counter stops and a
 //                  message shows; afterwards the same view differs by ≤ 8/255 (mean) from before
@@ -258,30 +261,67 @@ async function workerCase() {
   await ctx.close();
 }
 
-// „Entdecken“ (founder decision 1): once src/discover/flags.ts DISCOVER_DEFAULT_ON_TOUCH is true, touch-only
-// phones land in Discover instead of the notice; tools/discover-check.mjs --only gate checks that landing
+// „Entdecken“ (D45): src/discover/flags.ts DISCOVER_DEFAULT_ON_TOUCH true sends touch-only phones to Discover
+// instead of the notice (the founder turned it on on 2026-10-23); tools/discover-check.mjs --only gate checks
+// the landing on the phone profiles too
 const discoverDefault = /DISCOVER_DEFAULT_ON_TOUCH(?:\s*:\s*boolean)?\s*=\s*true/.test(fs.readFileSync(path.join(ROOT, 'src', 'discover', 'flags.ts'), 'utf8'));
+/** the game's notice (core.start.touch, index.html), not Discover's own laptop note, which names mouse and keyboard too */
+const NOTICE = /braucht Maus und Tastatur|needs a mouse and keyboard/;
 
 try {
-  if (only.includes('phone') && discoverDefault) pending.push('phone: DISCOVER_DEFAULT_ON_TOUCH is on, phones land in Discover (node tools/discover-check.mjs --only gate)');
-  else if (only.includes('phone')) {
+  if (only.includes('phone')) {
     const t = [];
     const kb = [];
+    const card = [];
+    let gate = null;
+    let notice = false;
     for (let i = 0; i < runs; i++) {
       const { ctx, page, cdp, bytes, logs } = await newPage({ viewport: { width: 412, height: 915 }, deviceScaleFactor: 2.625, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Mobile Safari/537.36' });
       await throttle(cdp, 1.6, 150, 4);
       const t0 = Date.now();
       await page.goto(`${U}/?reset=1`, { waitUntil: 'commit' });
-      const ms = await waitText(page, /Maus und Tastatur|mouse and keyboard/, 180000, t0);
-      t.push(ms);
-      kb.push(bytes.n / 1024);
-      if (i === 0) await page.screenshot({ path: path.join(dir, 'phone.png') });
-      out.phone = { ms: t, kb: kb.map((x) => round(x, 1)), logs: logs.slice(0, 8) };
+      if (discoverDefault) {
+        // the pre-boot gate has decided (the shell shows „Insel wird geladen“ and the downloads start)
+        let ms = null;
+        try {
+          await page.waitForFunction(() => window.__emaiGate && window.__emaiGate.ok, null, { timeout: 180000, polling: 30 });
+          ms = Date.now() - t0;
+        } catch {}
+        t.push(ms);
+        kb.push(bytes.n / 1024);
+        gate = await page.evaluate(() => (window.__emaiGate ? { reason: window.__emaiGate.reason, discover: window.__emaiGate.discover, stills: window.__emaiGate.stills } : null));
+        notice = notice || NOTICE.test(await page.evaluate(() => document.body.innerText));
+        try {
+          await page.waitForFunction(() => window.__discover && window.__discover.state().startCard, null, { timeout: 180000, polling: 100 });
+          card.push(Date.now() - t0);
+        } catch {
+          card.push(null);
+        }
+        notice = notice || NOTICE.test(await page.evaluate(() => document.body.innerText));
+      } else {
+        t.push(await waitText(page, NOTICE, 180000, t0));
+        kb.push(bytes.n / 1024);
+      }
+      if (i === 0) {
+        if (discoverDefault) await page.waitForTimeout(1500); // the loading shell fades off the start card
+        await page.screenshot({ path: path.join(dir, 'phone.png') });
+      }
+      out.phone = { discoverDefault, ms: t, kb: kb.map((x) => round(x, 1)), ...(discoverDefault ? { gate, notice, startCardMs: card } : {}), logs: logs.slice(0, 8) };
       await ctx.close();
     }
-    console.log(`phone: notice after ${t.map((x) => (x == null ? 'never' : (x / 1000).toFixed(2) + ' s')).join(', ')} · ${kb.map((x) => x.toFixed(0)).join(', ')} KB`);
-    v.check('phone: notice visible after', median(t) == null ? null : median(t) / 1000, '<=', 1.5, ' s');
-    v.check('phone: transferred until the notice', median(kb), '<=', 50, ' KB');
+    const secs = (a) => a.map((x) => (x == null ? 'never' : (x / 1000).toFixed(2) + ' s')).join(', ');
+    if (discoverDefault) {
+      console.log(`phone: in Discover after ${secs(t)} · ${kb.map((x) => x.toFixed(0)).join(', ')} KB · start card after ${secs(card)} (${gate?.stills ? 'stills ' + gate.stills : '3D'})`);
+      v.require('phone: the gate sends it to Discover (DISCOVER_DEFAULT_ON_TOUCH)', gate?.discover === true && gate?.reason == null, JSON.stringify(gate));
+      v.require('phone: no "needs mouse and keyboard" notice', !notice);
+      v.check('phone: Discover chosen after', median(t) == null ? null : median(t) / 1000, '<=', 1.5, ' s');
+      v.check('phone: transferred until Discover is chosen', median(kb), '<=', 50, ' KB');
+      v.require('phone: Discover’s start card comes (slow 4G, CPU 4×)', card.every((x) => x != null), secs(card));
+    } else {
+      console.log(`phone: notice after ${secs(t)} · ${kb.map((x) => x.toFixed(0)).join(', ')} KB`);
+      v.check('phone: notice visible after', median(t) == null ? null : median(t) / 1000, '<=', 1.5, ' s');
+      v.check('phone: transferred until the notice', median(kb), '<=', 50, ' KB');
+    }
   }
 
   if (only.includes('nowebgl2')) {

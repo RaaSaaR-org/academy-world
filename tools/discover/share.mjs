@@ -1,6 +1,8 @@
 // discover-check scenario `share` (WP-D3, plan §4 „Share“): „Am Laptop spielen“ from the menu, by touch.
 //   static   the share texts are the game's own: film/strings.ts F.subtitle = core.start.subtitle,
-//            F.film = core.start.replay, strings.ts S.laptopNote = core.start.touch (DE and EN)
+//            F.film = core.start.replay (DE and EN); strings.ts S.laptopNote is Discover's own info (D45,
+//            2026-10-23): in DE and EN, about the laptop or desktop with mouse and keyboard, and not the
+//            game's notice core.start.touch, which stays as it is (also in index.html's gate)
 //   3D       navigator.share gets { title, text, url } with url = the site's root under /academy-world/,
 //            never ?discover; a cancel (AbortError) does nothing more; a refusal (NotAllowedError) falls
 //            back to the clipboard („Link kopiert“) and the card with the link; without share and clipboard
@@ -76,9 +78,15 @@ export default async function run(t) {
   const copies = [
     ['F.subtitle = core.start.subtitle', sub ? [sub[1], sub[2]] : null, core(coreSrc, 'subtitle')],
     ['F.film = core.start.replay', pair(filmSrc, 'film'), core(coreSrc, 'replay')],
-    ['S.laptopNote = core.start.touch', (() => { const m = dscSrc.match(/laptopNote:\s*\{\s*de:\s*'([^']*)',\s*en:\s*'([^']*)'/s); return m ? [m[1], m[2]] : null; })(), core(coreSrc, 'touch')],
   ];
   for (const [name, ours, theirs] of copies) t.require(`copy ${name}`, !!ours && !!theirs[0] && JSON.stringify(ours) === JSON.stringify(theirs), `${JSON.stringify(ours)} ≠ ${JSON.stringify(theirs)}`);
+  // the laptop note: Discover's own info, not a copy of the game's notice (which must not change with it)
+  const note = (() => { const m = dscSrc.match(/laptopNote:\s*\{\s*de:\s*'([^']*)',\s*en:\s*'([^']*)'/s); return m ? [m[1], m[2]] : null; })();
+  const touch = core(coreSrc, 'touch');
+  const gateTouch = read('index.html').match(/touch:\s*\['([^']*)',\s*'([^']*)'\]/)?.slice(1, 3) ?? null;
+  t.require('S.laptopNote: DE and EN, laptop or desktop, mouse and keyboard', !!note && /Laptop oder Desktop/.test(note[0]) && /Maus und Tastatur/.test(note[0]) && /laptop or desktop/.test(note[1]) && /mouse and keyboard/.test(note[1]), JSON.stringify(note));
+  t.require('S.laptopNote: an info, not the game’s notice', !!note && !!touch[0] && note[0] !== touch[0] && note[1] !== touch[1] && !/braucht|needs/.test(note.join(' ')), JSON.stringify(note));
+  t.require('the game’s notice unchanged: core.start.touch = index.html’s touch notice (DE and EN)', /Maus und Tastatur/.test(touch[0] ?? '') && /mouse and keyboard/.test(touch[1] ?? '') && JSON.stringify(touch) === JSON.stringify(gateTouch), `${JSON.stringify(touch)} ≠ ${JSON.stringify(gateTouch)}`);
 
   const want = t.url; // http://127.0.0.1:<port>/academy-world/
   const dev = { ...t.dev, context: { ...t.dev.context, viewport: PHONE } };
@@ -97,7 +105,7 @@ export default async function run(t) {
     let s = await look(page);
     const d = s.shared[0] ?? {};
     t.require('3D: navigator.share gets the game’s link (sub-path, no ?discover)', d.url === want && !/discover/.test(d.url ?? ''), `${d.url} (want ${want})`);
-    t.require('3D: …with the title and the game’s own text', /Schwebewerk/.test(d.title ?? '') && /Maus und Tastatur/.test(d.text ?? '') && /Insel, die fliegen soll/.test(d.text ?? ''), JSON.stringify({ title: d.title, text: (d.text ?? '').slice(0, 60) }));
+    t.require('3D: …with the title, the game’s subtitle and the laptop note', /Schwebewerk/.test(d.title ?? '') && /Maus und Tastatur/.test(d.text ?? '') && /Insel, die fliegen soll/.test(d.text ?? ''), JSON.stringify({ title: d.title, text: (d.text ?? '').slice(0, 60) }));
     t.require('3D: shared: no fallback card', s.card !== 'share', String(s.card));
 
     // cancelled

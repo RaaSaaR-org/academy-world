@@ -22,9 +22,10 @@ import type { Lang, Mode, QualityLevel } from './types';
  *   ?retired=<id>[,<id>]  tests: extra retired stamp ids for the boot migration (the save fixtures,
  *                         tools/fixtures/saves; added to src/systems/retired.ts)
  *
- * „Entdecken“ (Discover, the mobile look-only mode; src/discover/, WP-D0). All inert without ?discover=1:
- *   ?discover=1           Discover instead of the game (the index.html gate also sets it on touch-only
- *                         phones once src/discover/flags.ts DISCOVER_DEFAULT_ON_TOUCH is true)
+ * „Entdecken“ (Discover, the mobile look-only mode; src/discover/, WP-D0). All inert outside Discover:
+ *   ?discover=1           Discover instead of the game, on any device. The index.html gate also sets it on
+ *                         touch-only phones without the parameter: src/discover/flags.ts
+ *                         DISCOVER_DEFAULT_ON_TOUCH, true since 2026-10-23 (D45)
  *   ?stills=1 | 0         force the stills tour (no 3D) | force 3D (no device detection, the probe only reports)
  *   ?perf=1  ?bench=1     the readout | „Messen“ on the start card (the benchmark)
  *   ?tier=phone|full      render tier (default phone)   ?dpr=<n>  ?fps=30|60  ?shadows=0|1  spike A/B knobs

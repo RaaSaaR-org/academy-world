@@ -1,6 +1,6 @@
 /**
- * Discover's render tier (WP-D0, plan §2.1). `phone` is the default with ?discover=1 (also on the
- * desktop): the low preset pinned (composer + grade, no bloom, no MSAA), pixel ratio ≤ 1.25 with a
+ * Discover's render tier (WP-D0, plan §2.1). `phone` is the default in Discover (also on the desktop
+ * with ?discover=1): the low preset pinned (composer + grade, no bloom, no MSAA), pixel ratio ≤ 1.25 with a
  * scale-only auto at 30 fps, 1024² shadows over ±35 m, plot tiers × 0.8. `full` (?tier=full) pins the
  * preset auto would start with and draws at the display rate. The spike's A/B knobs: ?dpr=, ?fps=,
  * ?shadows= (chosen at boot, never toggled: no relinks). Nothing here is ever saved.

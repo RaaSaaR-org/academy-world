@@ -39,7 +39,7 @@ Built with vanilla **three.js** (TypeScript strict), **Rapier** physics and **Vi
 
 On a phone you can look around the island and learn about it: a guided tour of 12 stops with info cards, the Schauhalle's robots in a 3D size viewer (next to you and EMI), the lift-off as a film, and a button to share the link. Playing (walking, stations, stars) stays on a desktop with mouse and keyboard. Weaker phones get the same tour with pictures instead of the 3D world.
 
-For now it opens only with `?discover=1`; phones without it still see the „needs mouse and keyboard“ notice. Once the real-phone test passes, touch-only phones land in it by default (D45; one line, `DISCOVER_DEFAULT_ON_TOUCH` in `src/discover/flags.ts`).
+Touch-only phones land in it by default, and it tells them that the full game is played on a laptop or desktop with mouse and keyboard; `?discover=1` opens it on any device, and the desktop is unchanged (D45, the founder's decision of 2026-10-23; one line, `DISCOVER_DEFAULT_ON_TOUCH` in `src/discover/flags.ts`, which also turns it back off).
 
 **Phone test link:** https://raasaar-org.github.io/academy-world/?discover=1&perf=1&bench=1 (tap „Messen“, wait about 3 minutes, tap „Kopieren“; the steps are in `docs/RELEASE.md` §7c). Without `&perf=1&bench=1` it is the plain tour; `&stills=1` forces the picture tour. Nothing outlives the browser session (no save, no localStorage) and nothing is sent anywhere. How it is built: `docs/ARCHITECTURE.md` §18.
 
@@ -92,7 +92,7 @@ Requirements: Node ≥ 20 and a WebGL2 desktop browser: Chrome or Edge 94+, Fire
 
 First load (measured with `node tools/load-size.mjs` on rc4, brotli as a CDN serves it): **1.68 MB transferred** (5.65 MB uncompressed) in 31 requests: Rapier WebAssembly 0.81 MB, JavaScript 0.65 MB (all six zones included), fonts 0.20 MB (subset to the characters the game uses), CSS 9 KB. No request goes to another server. The start screen is ready after ≈ 2.2 s at 16 Mbit/s / 40 ms RTT (rc3: 1.90 MB, 2.7 s); `npm run preview` sends the same 1.68 MB (rc3: 4.15 MB).
 
-`node tools/load-matrix.mjs` (CDN-like HTTP/2 server, median of 3, rc4): the loading screen shows after 0.05 s on cable, 0.12 s on 4G and 0.2 s on slow 4G; the title after 1.0 s on cable (2.3 s with a 4× slower processor), 2.5 s on 4G and 9.7 s on slow 4G. A phone gets its "needs mouse and keyboard" notice after 0.2 s and 4 KB, a browser without WebGL2 its message after 6 KB, before the game downloads (`node tools/robust-check.mjs`).
+`node tools/load-matrix.mjs` (CDN-like HTTP/2 server, median of 3, rc4): the loading screen shows after 0.05 s on cable, 0.12 s on 4G and 0.2 s on slow 4G; the title after 1.0 s on cable (2.3 s with a 4× slower processor), 2.5 s on 4G and 9.7 s on slow 4G. A browser without WebGL2 gets its message after 6 KB, before the game downloads; a touch-only phone is sent to „Entdecken“ after 0.24 s and 6 KB, and on slow 4G with a 4× slower processor its start card follows after 11.1 s (one run, 2026-10-23; `node tools/robust-check.mjs`).
 
 Hosting:
 - `npm run build` writes a brotli (`.br`, quality 11) and a gzip (`.gz`) copy next to every `.js`, `.css`, `.wasm`, `.svg`, `.html` and `.json` file. Let the host serve those by `Accept-Encoding` with `Content-Encoding: br` / `gzip` (nginx: `brotli_static on; gzip_static on;`, Caddy: `file_server { precompressed br gzip }`), or let it compress on the fly. The fonts are WOFF/WOFF2 and are already compressed.

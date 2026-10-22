@@ -125,6 +125,8 @@ html.dsc-on canvas#game { touch-action: none; }
 .dsc-wm span { color: var(--text-2); font-weight: 700; }
 .dsc-start h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.75rem; line-height: 1.15; letter-spacing: -0.02em; }
 .dsc-start p { margin: 0; font-size: 1rem; line-height: 1.5; color: var(--text-2); }
+/* the laptop note: an info about the full game, set off from the island's line above it */
+.dsc-start .dsc-note { padding-left: 12px; border-left: 2px solid var(--teal); font-size: 0.9375rem; line-height: 1.45; }
 .dsc-start .dsc-actions { position: sticky; bottom: calc(-18px - var(--sab)); margin: 4px 0 calc(-18px - var(--sab)); padding: 8px 0 calc(18px + var(--sab)); background: var(--surface); }
 .dsc-start .dsc-go { flex: 1; min-width: 9rem; }
 

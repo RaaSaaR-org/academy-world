@@ -1,6 +1,6 @@
 /**
- * „Am Laptop spielen“ until D3's share lands (WP-D0): a card with the game's own line about mouse and
- * keyboard, the link in readable form (the site's base URL, without ?discover) and „Kopieren“.
+ * „Am Laptop spielen“ until D3's share lands (WP-D0): a card with the line where the full game is played
+ * (S.laptopNote), the link in readable form (the site's base URL, without ?discover) and „Kopieren“.
  * Game-free.
  */
 import type { CardSpec, DiscoverUi, Sheet } from '../types';

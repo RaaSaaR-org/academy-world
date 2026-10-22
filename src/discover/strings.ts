@@ -2,6 +2,7 @@
  * Discover's UI chrome (WP-D0): buttons, labels, step and state lines. No content and no claims here:
  * card texts are copied from the game's strings (tour/content.gen.ts, D1; robots.gen.ts, D2). Where the
  * game already has the word it is the same word (core.pause.reducedMotion, core.start.credits, …).
+ * One line is Discover's own wording: S.laptopNote restates core.start.touch as an info (where the full game is played).
  * Both languages, „du“. Plain `{ de, en }` texts, so the stills path resolves them without the game.
  */
 export const S = {
@@ -25,10 +26,14 @@ export const S = {
   copied: { de: 'Kopiert', en: 'Copied' },
   linkCopied: { de: 'Link kopiert', en: 'Link copied' },
   hereToSee: { de: 'Hier zu sehen', en: 'You can see here' },
-  /** the game's own line (core.start.touch, the index.html notice): why „Am Laptop spielen“ */
+  /**
+   * Where the full game is (founder decision 2026-10-23, D45): an info, not the game's refusal. The start
+   * card, „Am Laptop spielen“, the film's end card and the share text. The game's own notice
+   * (core.start.touch, index.html) stays as it is; tools/discover/share.mjs checks both.
+   */
   laptopNote: {
-    de: 'Das Schwebewerk braucht Maus und Tastatur. Öffne den Link am besten am Laptop oder Desktop.',
-    en: 'The Floating Works needs a mouse and keyboard. Open the link on a laptop or desktop.',
+    de: 'Das ganze Spiel spielst du am Laptop oder Desktop, mit Maus und Tastatur.',
+    en: 'You can play the full game on a laptop or desktop with a mouse and keyboard.',
   },
   /** stills tour */
   stillsTour: { de: 'Bilder-Tour', en: 'Picture tour' },

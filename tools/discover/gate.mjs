@@ -1,6 +1,7 @@
 // discover-check scenario `gate` (WP-D0): the pre-boot gate's paths into Discover and the stills fork.
-//   notice     the phone without ?discover: the mouse-and-keyboard notice (while DISCOVER_DEFAULT_ON_TOUCH
-//              is false; with it true: Discover's start card instead)
+//   default    the phone without ?discover: DISCOVER_DEFAULT_ON_TOUCH is true (founder, 2026-10-23), so
+//              Discover's start card (or the stills tour), no mouse-and-keyboard notice; with the flag
+//              false: the notice, and the gate does not open Discover
 //   discover   ?discover=1: no notice, the start card over the 3D island
 //   desktop    no flag: the game's title as before (no Discover layer, no seam active); ?discover=1 works too
 //   stills     ?stills=1: the stills tour, no game / Rapier / world chunk / GLB requested, ≤ 400 KB before
@@ -14,22 +15,26 @@ import { DEVICES } from '../lib/devices.mjs';
 
 export const scenario = { name: 'gate', quick: true };
 
-const NOTICE = /Maus und Tastatur|mouse and keyboard/;
+// the game's notice (core.start.touch), not Discover's own laptop note, which names mouse and keyboard too
+const NOTICE = /braucht Maus und Tastatur|needs a mouse and keyboard/;
 const FORBIDDEN = /\/assets\/(Game|world|rapier[\w.]*)-[\w-]+\.js$|\.wasm$|\.glb$/;
 const defaultOnTouch = /DISCOVER_DEFAULT_ON_TOUCH(?:\s*:\s*boolean)?\s*=\s*true/.test(fs.readFileSync(path.join(ROOT, 'src', 'discover', 'flags.ts'), 'utf8'));
 const MEM2 = `Object.defineProperty(Navigator.prototype, 'deviceMemory', { configurable: true, get: () => 2 });`;
 const CRASH = `try { if (!sessionStorage.getItem('dc-seeded')) { sessionStorage.setItem('dc-seeded', '1'); sessionStorage.setItem('emai-academy-island/v1:discover-alive', JSON.stringify({ stop: 'schauhalle', t: Date.now() })); } } catch (e) {}`;
 
 export default async function run(t) {
-  // ── notice (or Discover by default) ──
+  // ── Discover by default (or the notice while the flag is false) ──
   {
     const h = await t.open('', { throttle: false });
     await h.page.waitForTimeout(1500);
     const r = await h.page.evaluate(() => ({ text: document.body.innerText, gate: window.__emaiGate ? { reason: window.__emaiGate.reason, discover: window.__emaiGate.discover } : null, touchOnly: matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches }));
-    if (!r.touchOnly) t.note(`notice: this engine does not report a touch-only pointer (${t.engine}); the notice case is checked on the Pixel profile`);
+    if (!r.touchOnly) t.note(`default: this engine does not report a touch-only pointer (${t.engine}); the phone's default is checked on the Pixel profile`);
     else if (defaultOnTouch) {
-      const s = await t.waitState(h.page, (s) => s.startCard || s.path === 'stills', 90000).catch(() => null);
-      t.require('DISCOVER_DEFAULT_ON_TOUCH: a touch-only phone lands in Discover', !!s && r.gate?.discover === true);
+      const s = await t.waitState(h.page, (s) => s.startCard, 150000).catch(() => null);
+      const text = await h.page.evaluate(() => document.body.innerText);
+      t.require('DISCOVER_DEFAULT_ON_TOUCH: a touch-only phone without ?discover lands in Discover', !!s && r.gate?.discover === true && r.gate?.reason == null, JSON.stringify({ gate: r.gate, path: s?.path }));
+      t.require('DISCOVER_DEFAULT_ON_TOUCH: no mouse-and-keyboard notice, the start card says where the full game is', !NOTICE.test(r.text) && !NOTICE.test(text) && /Laptop oder Desktop|laptop or desktop/.test(text), text.replace(/\s+/g, ' ').slice(0, 160));
+      await t.shot(h.page, 'default');
     } else {
       t.require('no flag: the touch notice shows', NOTICE.test(r.text), r.text.slice(0, 80));
       t.require('no flag: the gate does not open Discover', r.gate?.discover === false && r.gate?.reason === 'touch');

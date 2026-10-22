@@ -27,7 +27,7 @@ export function shareUrl(what: ShareWhat): string {
   return gameUrl();
 }
 
-/** What navigator.share gets: the game's title, its own subtitle and its mouse-and-keyboard line, the link. */
+/** What navigator.share gets: the game's title, its own subtitle, the line where the full game is played (S.laptopNote), the link. */
 export function shareData(t: TextResolver, what: ShareWhat): ShareData {
   return { title: t.resolve(F.shareTitle), text: `${t.resolve(F.subtitle)} ${t.resolve(S.laptopNote)}`, url: shareUrl(what) };
 }

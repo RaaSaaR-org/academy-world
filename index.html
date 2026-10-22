@@ -70,14 +70,15 @@
       // C8 pre-boot gate (classic inline script, runs before any download): WebGL2, class static blocks
       // (three r186 → Safari 16.4+), touch-only devices. On failure the shell says so in both languages and
       // nothing else is downloaded; touch laptops may load anyway. main.ts waits for window.__emaiGate.go.
-      // „Entdecken“ (WP-D0): ?discover=1 (or a touch-only phone once src/discover/flags.ts says so) clears the
-      // touch notice; it then picks the stills tour (gate.stills) for weak phones: ?stills=1, the session's
-      // choice, the crash marker of the last 3D session, no WebGL2 or too few of its limits, deviceMemory ≤ 3.
+      // „Entdecken“ (WP-D0): ?discover=1, or a touch-only phone while src/discover/flags.ts says so (on since
+      // 2026-10-23, D45; the build writes the flag into the marker below), clears the touch notice; it then
+      // picks the stills tour (gate.stills) for weak phones: ?stills=1, the session's choice, the crash marker
+      // of the last 3D session, no WebGL2 or too few of its limits, deviceMemory ≤ 3.
       (function () {
         var d = document, w = window, el = d.getElementById('loading');
         var search = location.search, touchOnly = false;
         try { touchOnly = w.matchMedia('(pointer: coarse)').matches && !w.matchMedia('(any-pointer: fine)').matches; } catch (e) {}
-        var discover = /[?&](discover|stills)=1(&|$)/.test(search) || (/*DISCOVER_DEFAULT_ON_TOUCH*/ false && touchOnly);
+        var discover = /[?&](discover|stills)=1(&|$)/.test(search) || (/*DISCOVER_DEFAULT_ON_TOUCH*/ true && touchOnly);
         var feat = true;
         var lang = 'de';
         try {
