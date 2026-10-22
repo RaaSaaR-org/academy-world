@@ -9,6 +9,9 @@ interface Gate {
   ok: boolean;
   reason: string | null;
   go: Promise<void>;
+  /** „Entdecken“ (WP-D0): Discover, and why it runs as the stills tour (null: 3D) */
+  discover?: boolean;
+  stills?: import('./discover/types').StillsReason | null;
 }
 
 function webgl2Available(): boolean {
@@ -67,6 +70,12 @@ async function start(): Promise<void> {
   else if (!webgl2Available()) return;
   const app = document.getElementById('app')!;
   try {
+    // „Entdecken“ on a weak phone: the stills tour, without the game, Rapier, the world or any model
+    if (gate?.discover && gate.stills) {
+      const { bootStills } = await importRetry(() => import('./discover/stills/boot'));
+      await bootStills(app, gate.stills);
+      return;
+    }
     const [{ Game }] = await Promise.all([importRetry(() => import('./core/Game')), importRetry(() => import('./ui/hud.css'))]);
     const game = new Game(app);
     void game.boot();

@@ -16,7 +16,8 @@ import type { Finale } from './index';
  *    at once (Phase 7: dusk exists only airborne, §5.7);
  *  - the dock switch: a flight state set to ground from outside the lift-off (the title's „Im Dock
  *    weiterspielen“, a progress reset) puts the island back in its dock (dock.ts), also before the chunk;
- *  - the title's „Abheben ansehen“ ('liftoff:replay') and `?liftoff=1` (all conditions met, at the console);
+ *  - the title's „Abheben ansehen“ ('liftoff:replay'; Discover's film: { from: 'discover', stills } and
+ *    'liftoff:skip') and `?liftoff=1` (all conditions met, at the console);
  *  - KIEL −36 stays open once the finale was reached (same rule as the finale's own);
  *  - the lift's KIEL button, the finale's debug hooks and its tool hooks (__academy.ext) load the
  *    module on first use.
@@ -124,8 +125,10 @@ export function lazyFinale(ctx: ZoneContext, deps: FinaleDeps): LazyFinale {
       current?.syncFlight();
     } else current?.syncFlight();
   });
-  // the title's „Abheben ansehen“ (WP1: after Start): play the lift-off on the Ausguck, end airborne
-  ctx.events.on('liftoff:replay', () => void load().then((f) => f?.replay('title')));
+  // the title's „Abheben ansehen“ (WP1: after Start): play the lift-off on the Ausguck, end airborne.
+  // Discover's film (WP-D3) sends { from: 'discover', stills } and skips with 'liftoff:skip'
+  ctx.events.on('liftoff:replay', (p?: { from?: 'title' | 'discover'; stills?: boolean }) => void load().then((f) => f?.replay(p?.from === 'discover' ? 'discover' : 'title', { stills: !!p?.stills })));
+  ctx.events.on('liftoff:skip', () => current?.skip());
   // ?liftoff=1 (plan §3.6): every lift-off condition met, at the console
   const liftoffParam = /[?&]liftoff=1(&|$)/.test(location.search);
   ctx.events.once('game:start', () => {

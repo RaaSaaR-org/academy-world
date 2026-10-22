@@ -283,11 +283,17 @@ export class ZoneManager {
     return !!view && this.reachablePred(view);
   }
 
+  /** Discover (WP-D0): a locked predicate ignores later unlocked calls (the quest's regionOpen wiring) */
+  private reachableLocked = false;
+
   /**
    * Which areas may load (WP4 wires it to ctx.quest: sites once the Revier is open). Newly reachable
-   * areas join the queue at once when the post-title queue already ran.
+   * areas join the queue at once when the post-title queue already ran. `lock` (Discover): this
+   * predicate stays; later calls without `lock` are ignored.
    */
-  setReachable(pred: (a: ZoneManifest) => boolean): void {
+  setReachable(pred: (a: ZoneManifest) => boolean, o: { lock?: boolean } = {}): void {
+    if (this.reachableLocked && !o.lock) return;
+    if (o.lock) this.reachableLocked = true;
     this.reachablePred = pred;
     if (this.queueStarted) void this.load(this.waiting());
   }
@@ -643,6 +649,16 @@ export class ZoneManager {
   /** the interior plot the player is in (its neighbours cap at their exterior tier), or null */
   interiorId: string | null = null;
 
+  /** Discover (src/discover/tier.ts): multiplies every plot's detail and exterior tier distance (1 = as built) */
+  tierScale = 1;
+
+  /**
+   * Discover (WP-D0): the least distance (m) an area reads as ctx.playerDistance, by area id. Empty for the
+   * game. Discover sets the Regelgarten's above its duck station's prewarm radius, so the observer at the
+   * hall never starts the MuJoCo worker; tiers, activity and audio still use the real distance.
+   */
+  readonly distanceFloor = new Map<string, number>();
+
   /** Per render frame. */
   update(dt: number): void {
     const feet = this.game.player.feet;
@@ -664,7 +680,8 @@ export class ZoneManager {
       const st = rec.state;
       const a = rec.layout.anchor;
       const dist = Math.hypot(feet.x - a.x, feet.z - a.z);
-      st.playerDistance = dist;
+      const floor = this.distanceFloor.size ? this.distanceFloor.get(rec.id) : undefined;
+      st.playerDistance = floor === undefined ? dist : Math.max(dist, floor);
       // tiers, HUD and activity from the plot's edge (a circle: rc4's anchor distance minus r)
       const sh = rec.shape;
       const circle = sh.kind === 'circle';
@@ -678,10 +695,11 @@ export class ZoneManager {
       // detail tiers, with hysteresis: a tier switches on LOD_HYST m inside its distance, off LOD_HYST m outside
       const g = st.groups;
       const T = rec.tiers;
-      let det = g.detail.visible ? edge <= T.detail + LOD_HYST : edge <= T.detail - LOD_HYST;
+      const ts = this.tierScale;
+      let det = g.detail.visible ? edge <= T.detail * ts + LOD_HYST : edge <= T.detail * ts - LOD_HYST;
       if (interior && interior !== rec.id) det = false;
       if (det !== g.detail.visible) g.detail.visible = det;
-      const ext = g.exterior.visible ? edge <= T.exterior + LOD_HYST * 2 : edge <= T.exterior - LOD_HYST * 2;
+      const ext = g.exterior.visible ? edge <= T.exterior * ts + LOD_HYST * 2 : edge <= T.exterior * ts - LOD_HYST * 2;
       if (ext !== g.exterior.visible) g.exterior.visible = ext;
       if (g.far.visible !== !ext) g.far.visible = !ext;
       // HUD cards (panels, readouts, Kennlinie cards) only near the plot: its edge + 4 m covers the gate spawn

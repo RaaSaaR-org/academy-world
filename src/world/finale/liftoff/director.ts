@@ -82,8 +82,11 @@ export interface LiftoffStats {
 
 export interface LiftoffDirector {
   readonly running: boolean;
-  /** start at the console. `auto`: EMI holds the thrust from the start (replays); `view`: the tools' climb view at h */
-  start(o?: { replay?: boolean; auto?: boolean; view?: number }): LiftoffRun;
+  /**
+   * start at the console. `auto`: EMI holds the thrust from the start (replays); `view`: the tools' climb view at h;
+   * `stills`: the stills version without reduced motion (Discover's film on a slow phone, its bench)
+   */
+  start(o?: { replay?: boolean; auto?: boolean; view?: number; stills?: boolean }): LiftoffRun;
   skip(): void;
   /** tools: force the throttle (true held, false released, null the key again) */
   throttle(v: boolean | null): void;
@@ -307,8 +310,8 @@ export function buildLiftoffDirector(ctx: ZoneContext, deps: LiftoffDeps): Lifto
         if (r.mode === 'flight' && !r.auto) showHint(r, L.holdHint);
         con.setStatus((lang) => (lang === 'de' ? L.armsFree.de : L.armsFree.en));
         sound.rumble(0.25);
-        // the arms let go: a short shudder through the deck (≤ 0.1, none under reduced motion)
-        ctx.player.shake(JUICE.releaseShake, 0.6);
+        // the arms let go: a short shudder through the deck (≤ 0.1, none under reduced motion or in the stills)
+        if (r.mode !== 'stills') ctx.player.shake(JUICE.releaseShake, 0.6);
         // the six arms lock in the wall one after another (WP3 plays the hydraulics and the thunks)
         for (let i = 0; i < 6; i++) ctx.after(0.2 + i * 0.42, () => sound.thunk(polar(ZONE_PLOTS[i].bearing, 104, 0)));
       }
@@ -705,7 +708,7 @@ export function buildLiftoffDirector(ctx: ZoneContext, deps: LiftoffDeps): Lifto
       const first = !o.replay && snap.flight.firstFlightAt == null && !snap.flight.liftoffSeen;
       let resolve!: (r: { skipped: boolean }) => void;
       const done = new Promise<{ skipped: boolean }>((res) => (resolve = res));
-      const mode: Mode = o.view != null ? 'view' : rm() ? 'stills' : 'flight';
+      const mode: Mode = o.view != null ? 'view' : o.stills || rm() ? 'stills' : 'flight';
       const r: Run = {
         mode,
         replay: !!o.replay,

@@ -1009,3 +1009,65 @@ The contracts Phase 7 added (`docs/PHASE7-PLAN.md` §5; owners in §5.1). Measur
 **Duck physics (D30).** MuJoCo WebAssembly runs in a worker owned by the duck station (`src/zones/regelgarten/duck/**`, Vite `?worker`); the fallback is recorded generations (SIM · AUFZEICHNUNG). The SO-101 stays on Rapier; the Unitree robots are kinematic.
 
 **Licences in the build.** `tools/notices-plugin.mjs` writes `dist/THIRD-PARTY-NOTICES.txt` from the modules the bundle really contains (the build fails on a package without a nameable licence) and copies `LICENSES/` to `dist/licenses/`; `vite.config.ts` adds MuJoCo from the worker. The checklist for the founder and a lawyer is `docs/LEGAL-REVIEW.md`.
+
+---
+
+## 18. „Entdecken“ (Discover): the phone mode
+
+On a phone you can look at the world and learn about it: a guided tour of 12 stops with info cards, the Schauhalle's robots in a 3D size viewer, the lift-off as a film, and a link to share. Playing (walking, stations, stars) stays on the desktop. Plan: `docs/DISCOVER-PLAN.md`. Decisions: D45. Measured results and the real-phone protocol: `docs/RELEASE.md` §7.
+
+**Who gets it.** `?discover=1` on any device (also the desktop, for testing). `src/discover/flags.ts` holds `DISCOVER_DEFAULT_ON_TOUCH` (now `false`). Flipping it to `true` is the one-line change that sends touch-only phones to Discover instead of the „needs mouse and keyboard“ notice: the Vite plugin „discover flag (WP-D0)“ in `vite.config.ts` writes the value into the `/*DISCOVER_DEFAULT_ON_TOUCH*/` marker of the inline gate in `index.html`, and `robust-check --only phone` keeps checking the notice while the flag is `false`.
+
+**Two paths, chosen in the gate** (`index.html`, before any download):
+- **3D** (iPhone 12 / iOS 16.4+ and Pixel-6-class Android): the game engine boots with Discover's hooks.
+- **Stills tour** (weaker phones): the same 12 stops and cards with pre-rendered pictures (`public/discover/stills/<stop>-720.webp` and `-1280.webp`). `main.ts` imports `src/discover/stills/boot.ts` *instead of* `Game`: no three, no Rapier, no world chunk, no GLB. The gate picks it for `?stills=1`, the crash marker of the last 3D session, no WebGL2 or too few of its limits (`MAX_TEXTURE_SIZE` < 4096 or < 16 texture units), or `navigator.deviceMemory` ≤ 3. In 3D, a frame probe over the first 3 s after the start card offers the stills tour at p90 > 50 ms and switches to it at p90 > 80 ms (`src/discover/detect.ts`). The choice lives in sessionStorage for the session only (`…:discover-mode`); `?stills=0` forces 3D and turns the probe into a report.
+- **Nothing is ever written to localStorage.** The 3D path runs on an in-memory save (`Progress({ memory: true })` + `adoptMemory(discoverSave(...))`: Entscheider mode, every station stamped, docked), language and settings stay in memory, and the render tier never saves `quality-auto`. The crash marker `…:discover-alive` is sessionStorage, cleared on `pagehide`.
+
+**Engine seams** (owner WP-D0; every one is inert without `?discover=1`, checked on the desktop by `tools/discover/gate.mjs`, the merge tier, `load-size`, `warmup --table`, `robust-check` and `a11y-keyboard`):
+- `Game`: phase `'discover'` (no pointer lock, no actions, no fall rescue); `cameraDriver(dt)` (null while the film lets the player camera and the lift-off director draw); `frameHook(dt)` after each drawn frame (chained, never replaced: perf, then the tour's markers); `frameCapMs`; `renderOptions`; the `DiscoverBoot` hooks `beforeCore` / `afterCore` / `place` / `start`; `setLang(l, persist)`. `src/discover/index.ts` downloads next to Rapier and the world, so it is never on the critical path.
+- `Progress`: `{ memory: true }` and `adoptMemory(data)`.
+- `RenderSystem`: `setTier(t)` (pins a preset, keeps only the render-scale part of auto at the fps cap, never saves) and the `frameBufferType` option (8-bit composer buffers when half-float targets are missing).
+- `ZoneManager`: `tierScale` (multiplies the plot tiers), `setReachable(pred, { lock })` (the quest's re-wiring cannot widen Discover's set: the six lobes, the Schauhalle, the Sonnenacker and the Traumhangar), and `distanceFloor` (the Regelgarten reads at least 56 m, past its duck station's 55 m MuJoCo prewarm radius, so Discover never downloads MuJoCo).
+- Finale (owner WP-D3): `'liftoff:replay'` takes `{ from: 'title' | 'discover', stills? }`; `'liftoff:skip'` calls `Finale.skip()`; `director.start({ stills })`.
+
+**The observer.** The player has no collider and no gravity; each frame `src/discover/observer.ts` puts its feet 1.7 m below the camera, so levels of detail, robot queues, the shadow box and zone audio follow the camera. Inside a lobe plot the feet are pushed outside it (no lobe `onEnter`); the hall and the hangar are allowed, so their interiors cull correctly. During a stop's pre-roll the feet are pinned at the target.
+
+**Packages plug in without editing a shared file** (`src/discover/types.ts` is the contract): `src/discover/<pkg>/install.ts` (3D) and `src/discover/<pkg>/stills.ts` (stills path) export `default install(h)` and are picked up by `import.meta.glob`. They register a mode (`h.modes.register('tour' | 'viewer' | 'film', { enter, exit })`; entering one mode exits the current one) and their part of the `DiscoverHandle`: `h.stops` and `h.goto` (tour, WP-D1), `h.robots` (viewer, WP-D2), `h.share` (film, WP-D3). Heavy code sits behind a dynamic import inside `enter()`. Stills code must not import three, `Game`, Rapier, the world, `src/ui/*` or `src/i18n/*` (type imports are fine), or a shared chunk splits into the desktop load; `tools/discover/load.mjs` and `gate.mjs` check it.
+
+**The packages.**
+- **Tour** (`src/discover/tour/**`): 12 stops (dock, Brückenkopf, Libelle, Zonen West, Zonen Nord, Schauhalle, Zonen Ost, Ausguck, Grubenrand, Sonnenacker, Traumhangar, Abheben), posed from the game's own layout numbers. Each hop: pre-roll (areas, ground fit, observer pinned until robots load ≤ 3 s, every program and the shadow depth programs compiled, behind „lädt …“), a lifted Bézier flight (a 0.4 s cross-fade under reduced motion; interiors are entered and left through their door), then the card at peek, „i / 12“, an aria-live line and up to 6 teal markers. ←/→, the sheet's ‹ › and a sideways swipe change stops; a tap picks a robot or a spot; every card lists „Hier zu sehen“ chips; „Alle Stopps“ is an `<ol>`.
+- **Viewer** (`src/discover/viewer/**`, lazy): a studio with a turntable, a 0–2.5 m measuring wall, „Du“ 1.75 m and EMI 1.55 m, and the robot's model height (MODELL chip). The camera draws only layer 9 while it is open (the world stays, so no program relinks). At most `tier.viewerFiles` (2 on phones) parsed models. 17 robots, 21 with `VITE_AMBER=1` (`SHOW_AMBER` from `src/core/release.ts`).
+- **Film** (`src/discover/film/**`, lazy): the live engine replay of the lift-off (not a video). The camera detaches, `#hud.discover.film` shows captions, subtitles and the lift-off HUD, EMI-01's voice is on. `tier.film = 'auto'` plays the director's stills version under reduced motion or when `perf.window(3000).p90 > 50 ms`. The end card offers „Am Laptop spielen“, „Nochmal ansehen“ and „Zurück zur Tour“ (docks the island again). `share.ts` is Game-free and shares the game's URL (`import.meta.env.BASE_URL`, never `?discover`): `navigator.share`, else the clipboard and „Link kopiert“, else a read-only field.
+
+**Content without new claims.** Card text is copied by generators, never retyped: `tools/discover/content.mjs` writes `src/discover/data/content.gen.ts` from the sources in `src/discover/tour/content.spec.ts`; `tools/discover/robots-data.mjs` writes `src/discover/data/robots.gen.ts` from `HALL_ROBOTS` and `sheet()`. Each has `--check` (merge tier). Every number carries a chip; card bodies ≤ 35 words. Only UI chrome is new text (`src/discover/strings.ts` and each package's `strings.ts`, DE and EN).
+
+**Render tier** (`src/discover/tier.ts`; nothing saved):
+
+| Knob | `phone` (default) | `full` (`?tier=full`) |
+|---|---|---|
+| Preset | `low` pinned (composer + grade, no bloom, no MSAA) | the preset auto would start with, pinned |
+| Pixel-ratio cap / render-scale floor | 1.25 / 0.7 | 1.5 / 0.6 |
+| Frame cap | 30 fps | display |
+| Shadows | 1024², ±35 m | 2048², ±45 m |
+| Level-of-detail distances (`tierScale`) | × 0.8 | × 1 |
+| Viewer parsed models | 2 | 4 |
+| Film | `auto` (stills when slow or reduced motion) | full |
+
+**Budgets** (Discover's own; the desktop caps are unchanged; measured by `node tools/discover-check.mjs` on a `BASE_PATH=/academy-world/` production build, Pixel 7 profile = Chromium 4× CPU, 9 Mbit/s, 85 ms; iPhone 15 profile = WebKit):
+
+| Budget | Cap |
+|---|---|
+| First load to the start card (brotli) | ≤ 1.85 MB |
+| Discover chunks | core + tour + content ≤ 60 KB; viewer ≤ 30 KB; film ≤ 10 KB |
+| Stills path before the first picture | ≤ 400 KB; no Rapier, world chunk or GLB |
+| Stills pictures | ≤ 120 KB each |
+| Start card / first stop after „Los“ (Pixel profile) | ≤ 6 s / ≤ 12 s |
+| Shader programs | ≤ 150 at the start card; 0 links during flights and on opening a viewer robot |
+| Draws / triangles per stop | ≤ 220 / ≤ 0.9 M; viewer ≤ 60 draws |
+| Memory after the tour + 5 viewer robots + the film (desktop, after GC) | JS heap ≤ 90 MB; estimated GPU ≤ 300 MB; second lap ≤ + 5 % |
+| Requests | 0 to other origins; 0 MuJoCo bytes; localStorage byte-identical |
+| Real phone (founder) | p90 frame ≤ 40 ms at every stop; start card ≤ 10 s on mobile data; no reload across bench + viewer + film |
+
+**URL knobs** (all need `?discover=1`, except `?stills=1`): `?stills=1|0` (force the stills tour / 3D), `?perf=1` (readout and „Messen“ in the menu), `?bench=1` („Messen“ on the start card: the tour at 5 s per stop, 3 viewer robots, the stills film, then a table with „Kopieren“), `?tier=phone|full`, `?dpr=`, `?fps=30|60`, `?shadows=0|1`, `?stop=<id>`, `?lang=de|en`.
+
+**Tests.** `node tools/discover-check.mjs [--only …] [--devices pixel7,iphone15] [--amber] [--quick]` runs the scenarios in `tools/discover/` (gate, boot, storage, load, perf, memory, i18n, tour, viewer, film, share, stills-tour) and writes screenshots to `artifacts/discover/<device>/`. Hooks: `window.__discover` (`state()`, `goto(id)`, `stops()`, `perf()`, `bench()`), `window.__discoverTour()`, `window.__discoverViewer`, and the debug exts `discover:state|goto|stops|perf|bench|probe`. Gates: the merge tier runs `discover-quick` and both `--check` generators; the wave tier runs `discover-full` and `discover-full-amber`.

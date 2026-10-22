@@ -5,11 +5,14 @@
 //
 //   --tier merge     ≈ 15–25 min: typecheck, typecheck:zone for every area folder touched since the base,
 //                    build, load-size, i18n-audit, save-migrate, robots/check (only when src/robots/**
-//                    changed), third-party, text-audit, drawcalls --ledger, playtest --quick
+//                    changed), third-party, text-audit, drawcalls --ledger, playtest --quick, and „Entdecken“
+//                    (Discover plan §6): the two generators' drift checks (discover/content, discover/
+//                    robots-data --check) and discover-check --quick (Pixel profile, /academy-world/ build)
 //   --tier wave      ≈ 2–3 h: a head build into artifacts/dist/head, the rc4 reference once (dist-ref), the
 //                    merge tier, then the playtests, perf, A/B, hitches, memory, lift-off, flash,
 //                    onboarding, ending, chips, glyphs, watching rule, secrets, a11y, robustness, chunk
-//                    caps, the playthrough lap and the deploy check of §6.3
+//                    caps, the playthrough lap and the deploy check of §6.3; plus discover-full: every
+//                    Discover scenario on pixel7 + iphone15, in a default and a VITE_AMBER=1 build
 //   --tier selftest  ≈ 5 min: the self-tests of the gate tools (each must catch its seeded miss):
 //                    drawcalls, i18n-audit, watch-audit, flash-check, secret-audit, liftoff-check
 //   --base <ref>     where „touched“ starts: default the newest Phase 7 wave tag that HEAD contains
@@ -120,6 +123,11 @@ function mergeTier() {
   step('text-audit', node('text-audit', '--lang', 'de', '--mode', 'entdecker'));
   step('drawcalls', { ...node('drawcalls', '--views', 'bridgehead,plaza', '--ledger'), flags: ['ledger'], views: true });
   step('playtest-quick', { ...npm('playtest', '--lang', 'de', '--mode', 'entdecker', '--quick'), tool: 'playtest', flags: ['quick'] });
+  // „Entdecken“ (Discover plan §6): the copied card texts match their sources, then the phone smoke test
+  // (gate, boot with the tour's first 3 stops, storage) on its own BASE_PATH=/academy-world/ build
+  step('discover-content-check', node('discover/content', '--check'));
+  step('discover-robots-check', node('discover/robots-data', '--check'));
+  step('discover-quick', { ...node('discover-check', '--quick'), flags: ['quick'] });
 }
 
 function waveTier() {
@@ -162,6 +170,10 @@ function waveTier() {
   step('load-size-chunks', { ...node('load-size', '--chunks'), flags: ['chunks'] });
   step('load-matrix-lap', { ...node('load-matrix', '--lap'), flags: ['lap'] });
   step('deploy-check', node('deploy-check', '--preview'));
+  // „Entdecken“ (Discover plan §6): every scenario on both phone profiles, each in its own /academy-world/
+  // build, without and with the amber exhibits (iphone15 falls back to Chromium with a note without WebKit)
+  step('discover-full', { ...node('discover-check', '--devices', 'pixel7,iphone15'), timeoutMin: 120 });
+  step('discover-full-amber', { ...node('discover-check', '--devices', 'pixel7,iphone15', '--amber'), flags: ['amber'], timeoutMin: 120 });
 }
 
 function selftestTier() {

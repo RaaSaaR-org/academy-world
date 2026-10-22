@@ -55,8 +55,13 @@ export interface Finale {
   debug(name: string): unknown;
   /** a tool hook by name (the lazy loader registers proxies for them) */
   ext(name: string): ((...a: unknown[]) => unknown) | null;
-  /** the title's „Abheben ansehen“ and the console's „Start wiederholen“ in the air: fade to the dock, play, end airborne */
-  replay(from: 'title' | 'console' | 'tool'): Promise<void>;
+  /**
+   * the title's „Abheben ansehen“ and the console's „Start wiederholen“ in the air: fade to the dock, play, end airborne.
+   * 'discover': Discover's film (as the title's, EMI holds the thrust); `stills`: the director's stills version
+   */
+  replay(from: 'title' | 'console' | 'tool' | 'discover', o?: { stills?: boolean }): Promise<void>;
+  /** Discover's „Überspringen“ ('liftoff:skip'): the director's skip (a fade, the final state) */
+  skip(): void;
   /** the flight state changed from outside (the stand-in's dock switch): resync the evening and the stand */
   syncFlight(): void;
 }
@@ -402,7 +407,7 @@ export function buildFinale(ctx: ZoneContext, deps: FinaleDeps): Finale {
 
   /** the lift-off from the console; resolves once the ending has opened the certificate (the first flight) or is done */
   let launching: Promise<void> | null = null;
-  const launch = (o: { replay?: boolean; auto?: boolean; skip?: boolean } = {}): Promise<void> => {
+  const launch = (o: { replay?: boolean; auto?: boolean; skip?: boolean; stills?: boolean } = {}): Promise<void> => {
     if (launching) return launching;
     const first = !o.replay && !flown();
     // everyone flies from the same spot, facing the sun (a short fade if you pressed from the side)
@@ -411,7 +416,7 @@ export function buildFinale(ctx: ZoneContext, deps: FinaleDeps): Finale {
     checklist.hide();
     // a guest that is not in yet stays home (its load keeps going for the next lift-off)
     void guests.prepare();
-    const run = director.start({ replay: !first, auto: o.auto });
+    const run = director.start({ replay: !first, auto: o.auto, stills: o.stills });
     if (o.skip) ctx.after(0.05, () => director.skip());
     launching = run.done
       .then(() => {
@@ -426,11 +431,11 @@ export function buildFinale(ctx: ZoneContext, deps: FinaleDeps): Finale {
     return launching;
   };
   /** in the air: fade to the dock, play, end airborne (the saved sky) */
-  const replay = async (from: 'title' | 'console' | 'tool'): Promise<void> => {
+  const replay = async (from: 'title' | 'console' | 'tool' | 'discover', o: { stills?: boolean } = {}): Promise<void> => {
     if (director.running || launching) return;
     await toDock({ teleport: true });
     placeEmi();
-    await launch({ replay: true, auto: from === 'title' });
+    await launch({ replay: true, auto: from === 'title' || from === 'discover', stills: o.stills });
   };
   const sayMissing = (): void => {
     const s = ctx.quest.snapshot();
@@ -673,6 +678,7 @@ export function buildFinale(ctx: ZoneContext, deps: FinaleDeps): Finale {
     },
     ext: (name) => exts.get(name) ?? null,
     replay,
+    skip: () => director.skip(),
     syncFlight() {
       evening.sync();
       stand.visible = flown();

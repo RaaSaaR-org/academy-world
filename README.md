@@ -29,11 +29,19 @@ Built with vanilla **three.js** (TypeScript strict), **Rapier** physics and **Vi
 
 | Tier | Command | Time | What runs |
 |---|---|---|---|
-| merge | `node tools/gates.mjs --tier merge` | ≈ 15–25 min | typecheck, `typecheck:zone` per touched area, build, load size, i18n, save migration, robots check (if `src/robots/**` changed), third-party requests, the DE Entdecker text audit, the draw ledger at the bridge head and the plaza, the quick playtest |
-| wave (and nightly) | `node tools/gates.mjs --tier wave` | ≈ 2–3 h | the merge tier plus the full playtests (incl. an rc4 save), perf high and low, perf-cpu at 4×, the GPU A/B against rc4, hitches (Chromium and WebKit), warm-up, memory lap, the lift-off checks, flash-check, onboarding, ending, the four `text-audit --chips` runs, glyphs, watch and secret audits, a11y, contrast, audio, idle render, robustness, MuJoCo, chunks, the load matrix and deploy-check |
+| merge | `node tools/gates.mjs --tier merge` | ≈ 25–30 min | typecheck, `typecheck:zone` per touched area, build, load size, i18n, save migration, robots check (if `src/robots/**` changed), third-party requests, the DE Entdecker text audit, the draw ledger at the bridge head and the plaza, the quick playtest, and Discover's two text drift checks plus its phone smoke test (`discover-check --quick`) |
+| wave (and nightly) | `node tools/gates.mjs --tier wave` | ≈ 2–3 h | the merge tier plus the full playtests (incl. an rc4 save), perf high and low, perf-cpu at 4×, the GPU A/B against rc4, hitches (Chromium and WebKit), warm-up, memory lap, the lift-off checks, flash-check, onboarding, ending, the four `text-audit --chips` runs, glyphs, watch and secret audits, a11y, contrast, audio, idle render, robustness, MuJoCo, chunks, the load matrix and deploy-check; every Discover scenario on both phone profiles, without and with the amber exhibits |
 | selftest | `node tools/gates.mjs --tier selftest` | ≈ 5 min | each gate tool must catch its seeded miss |
 
 `--only id,id`, `--skip id,id` and `--dry` narrow a run. Known misses for rc5 are listed in `docs/RELEASE.md` §3.
+
+## Auf dem Handy („Entdecken“)
+
+On a phone you can look around the island and learn about it: a guided tour of 12 stops with info cards, the Schauhalle's robots in a 3D size viewer (next to you and EMI), the lift-off as a film, and a button to share the link. Playing (walking, stations, stars) stays on a desktop with mouse and keyboard. Weaker phones get the same tour with pictures instead of the 3D world.
+
+For now it opens only with `?discover=1`; phones without it still see the „needs mouse and keyboard“ notice. Once the real-phone test passes, touch-only phones land in it by default (D45; one line, `DISCOVER_DEFAULT_ON_TOUCH` in `src/discover/flags.ts`).
+
+**Phone test link:** https://raasaar-org.github.io/academy-world/?discover=1&perf=1&bench=1 (tap „Messen“, wait about 3 minutes, tap „Kopieren“; the steps are in `docs/RELEASE.md` §7c). Without `&perf=1&bench=1` it is the plain tour; `&stills=1` forces the picture tour. Nothing outlives the browser session (no save, no localStorage) and nothing is sent anywhere. How it is built: `docs/ARCHITECTURE.md` §18.
 
 ## What you play
 

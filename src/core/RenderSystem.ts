@@ -258,6 +258,24 @@ interface AutoState {
 }
 
 /**
+ * Discover (src/discover/tier.ts, WP-D0): a pinned render tier. The preset is `level` with these fields
+ * overridden; only the render-scale part of auto runs (target 1000 / fpsCap ms, floor scaleMin) and
+ * nothing is saved ('quality-auto' stays as it was).
+ */
+export interface RenderTier {
+  level: QualityLevel;
+  preset?: Partial<QualityPreset>;
+  fpsCap?: number | null;
+  scaleMin?: number;
+}
+
+/** Constructor options (Discover only; the game passes none). */
+export interface RenderOptions {
+  /** the composer's buffer type: HalfFloatType by default; UnsignedByteType where half-float targets fail (some phone GPUs) */
+  frameBufferType?: THREE.TextureDataType;
+}
+
+/**
  * WebGLRenderer + postprocessing (bloom on emissives > 1, ACES tone mapping, vignette),
  * pixel-ratio cap, quality presets and the adaptive 'auto' controller (C10, AUTO_QUALITY).
  */
@@ -308,6 +326,7 @@ export class RenderSystem {
   constructor(
     readonly canvas: HTMLCanvasElement,
     private events: EventBus,
+    o: RenderOptions = {},
   ) {
     this.renderer = new THREE.WebGLRenderer({
       canvas,
@@ -328,7 +347,7 @@ export class RenderSystem {
     this.camera.position.set(0, 1.7, 0);
     this.scene.add(this.camera); // so camera-attached objects (held props, effects) render
 
-    this.composer = new EffectComposer(this.renderer, { frameBufferType: THREE.HalfFloatType, multisampling: 4 });
+    this.composer = new EffectComposer(this.renderer, { frameBufferType: o.frameBufferType ?? THREE.HalfFloatType, multisampling: 4 });
     this.composer.addPass(new RenderPass(this.scene, this.camera));
     this.bloom = new BloomEffect({
       mipmapBlur: true,
@@ -422,14 +441,35 @@ export class RenderSystem {
     this.setLevel(same ? saved!.level : tierForRenderer(this.rendererName), true);
   }
 
+  /** Discover: the pinned tier (null for the game) */
+  pinned: RenderTier | null = null;
+
+  /**
+   * Discover (WP-D0): pin a tier (its level with the overrides; only the render scale adapts, toward
+   * 1000 / fpsCap ms; nothing is saved), or null to return to the quality setting. Call it before the
+   * boot warm-up, so the programs of the pinned preset are the ones compiled.
+   */
+  setTier(t: RenderTier | null): void {
+    this.pinned = t;
+    this.bottomSince = this.fastSince = this.upTries = this.lastUpAt = 0;
+    this.cloudLite = false;
+    this.failedLevels.clear();
+    if (!t) {
+      this.applyQualitySetting(this.setting);
+      return;
+    }
+    this.renderScale = 1;
+    this.setLevel(t.level, false);
+  }
+
   private saveAuto(): void {
-    if (this.setting !== 'auto') return;
+    if (this.setting !== 'auto' || this.pinned) return;
     saveJSON(AUTO_QUALITY.storageKey, { level: this.level, scale: +this.renderScale.toFixed(2), renderer: this.rendererName } satisfies AutoState);
   }
 
   setLevel(level: QualityLevel, auto = false): void {
     this.level = level;
-    this.preset = QUALITY_PRESETS[level];
+    this.preset = this.pinned?.preset ? { ...QUALITY_PRESETS[level], ...this.pinned.preset } : QUALITY_PRESETS[level];
     const p = this.preset;
     this.bloom.resolution.scale = p.bloomScale;
     this.bloom.blendMode.opacity.value = p.bloom ? 1 : 0;
@@ -657,8 +697,12 @@ export class RenderSystem {
       for (const t of this.frameTimes) s += t;
       this.fps = this.frameTimes.length / s;
     }
-    if (this.setting !== 'auto' || !measuring) {
+    if ((this.setting !== 'auto' && !this.pinned) || !measuring) {
       this.fastSince = 0;
+      return;
+    }
+    if (this.pinned) {
+      this.trackPinned(now);
       return;
     }
     // a step up that has held: the next probe may come sooner again
@@ -695,6 +739,32 @@ export class RenderSystem {
       this.lastUpAt = now;
       this.stepUp(now);
     }
+  }
+
+  /** Discover: the render scale alone follows the frame time (target 1000 / fpsCap ms); no level change, no save. */
+  private trackPinned(now: number): void {
+    const A = AUTO_QUALITY;
+    const t = this.pinned!;
+    const target = t.fpsCap ? 1000 / t.fpsCap : A.targetMs;
+    const min = t.scaleMin ?? A.scaleMin;
+    if (this.frameTimes.length < Math.min(A.windowFrames, 60) || now - this.lastChange < A.holdMs) return;
+    const p90 = percentile(this.frameTimes, 0.9) * 1000;
+    if (p90 > A.slow * target) {
+      this.fastSince = 0;
+      if (this.renderScale <= min + 1e-3) return;
+      this.renderScale = Math.max(min, +(this.renderScale - A.scaleStep).toFixed(2));
+      this.applyScale(now);
+      return;
+    }
+    if (this.renderScale >= 1 - 1e-3 || p90 > 1.03 * target) {
+      this.fastSince = 0;
+      return;
+    }
+    if (!this.fastSince) this.fastSince = now;
+    if (now - this.fastSince < A.holdUpMs) return;
+    this.fastSince = 0;
+    this.renderScale = Math.min(1, +(this.renderScale + A.scaleStep).toFixed(2));
+    this.applyScale(now);
   }
 
   /** Relative GPU cost of the next step up (0: nothing left to raise). */

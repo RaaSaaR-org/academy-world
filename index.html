@@ -2,7 +2,7 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#141414" />
     <!-- unlisted: the public link is shared, not indexed (a robots.txt under a project sub-path is ignored) -->
     <meta name="robots" content="noindex, nofollow" />
@@ -70,8 +70,15 @@
       // C8 pre-boot gate (classic inline script, runs before any download): WebGL2, class static blocks
       // (three r186 → Safari 16.4+), touch-only devices. On failure the shell says so in both languages and
       // nothing else is downloaded; touch laptops may load anyway. main.ts waits for window.__emaiGate.go.
+      // „Entdecken“ (WP-D0): ?discover=1 (or a touch-only phone once src/discover/flags.ts says so) clears the
+      // touch notice; it then picks the stills tour (gate.stills) for weak phones: ?stills=1, the session's
+      // choice, the crash marker of the last 3D session, no WebGL2 or too few of its limits, deviceMemory ≤ 3.
       (function () {
         var d = document, w = window, el = d.getElementById('loading');
+        var search = location.search, touchOnly = false;
+        try { touchOnly = w.matchMedia('(pointer: coarse)').matches && !w.matchMedia('(any-pointer: fine)').matches; } catch (e) {}
+        var discover = /[?&](discover|stills)=1(&|$)/.test(search) || (/*DISCOVER_DEFAULT_ON_TOUCH*/ false && touchOnly);
+        var feat = true;
         var lang = 'de';
         try {
           var q = new URLSearchParams(location.search).get('lang');
@@ -86,7 +93,10 @@
         try {
           var c = d.createElement('canvas'), gl = c.getContext('webgl2');
           if (!gl) reason = 'webgl2';
-          else { var lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); }
+          else {
+            if (discover) { try { feat = gl.getParameter(gl.MAX_TEXTURE_SIZE) >= 4096 && gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) >= 16; } catch (e) {} }
+            var lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext();
+          }
         } catch (e) { reason = 'webgl2'; }
         if (!reason) { try { new Function('class A { static { } }'); } catch (e) { reason = 'old'; } }
         // B4: the build loads its chunks through an import map (Firefox 108+). Firefox 93–107 pass the test
@@ -98,11 +108,18 @@
             else if (/Firefox\//.test(navigator.userAgent || '')) reason = 'old';
           } catch (e) { reason = 'old'; }
         }
-        if (!reason) {
-          try { if (w.matchMedia('(pointer: coarse)').matches && !w.matchMedia('(any-pointer: fine)').matches) reason = 'touch'; } catch (e) {}
+        if (!reason && touchOnly && !discover) reason = 'touch';
+        var stills = null, crash = null;
+        if (discover) {
+          var force = (search.match(/[?&]stills=([01])(&|$)/) || [])[1], choice = null, P = 'emai-academy-island/v1:', mem = navigator.deviceMemory;
+          try { choice = sessionStorage.getItem(P + 'discover-mode'); crash = JSON.parse(sessionStorage.getItem(P + 'discover-alive') || 'null'); } catch (e) {}
+          if (force === '1') stills = 'forced';
+          else if (reason === 'webgl2' && force !== '0') { stills = 'webgl2'; reason = null; }
+          else if (force !== '0' && choice !== '3d') stills = choice === 'stills' ? 'session' : crash ? 'crash' : !feat ? 'webgl' : mem && mem <= 3 ? 'memory' : null;
+          if (stills === 'forced' && reason === 'webgl2') reason = null;
         }
         var go;
-        var gate = (w.__emaiGate = { ok: !reason, reason: reason, lang: lang, go: new Promise(function (r) { go = r; }) });
+        var gate = (w.__emaiGate = { ok: !reason, reason: reason, lang: lang, discover: discover, stills: stills, crash: crash, go: new Promise(function (r) { go = r; }) });
         function pass() {
           gate.ok = true;
           var links = d.querySelectorAll('link[data-gate]');

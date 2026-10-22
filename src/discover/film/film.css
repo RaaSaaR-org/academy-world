@@ -1,0 +1,14 @@
+/* The film (WP-D3). „Überspringen“ under the top bar, right (the subtitles and the end card own the bottom). */
+.dsc-film-skip { position: absolute; top: calc(var(--top-h) + var(--sat) + 10px); right: calc(10px + var(--sar)); min-height: 44px; padding: 0 16px; background: var(--glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); pointer-events: auto; }
+.dsc-film-skip[hidden] { display: none; }
+/*
+ * The lift-off's HUD on a phone: the telemetry card top right under „Überspringen“ (the desktop's right
+ * column would cover the horizon), the outside shot's chip below the button, the banner under the bar, the
+ * subtitles at the bottom without the keyboard hint („Enter“). The long checklist stays out (it does not fit).
+ */
+#hud.discover.film #panels { top: calc(3rem + env(safe-area-inset-top, 0px) + 66px); bottom: auto; right: calc(10px + env(safe-area-inset-right, 0px)); width: min(300px, calc(100% - 20px)); }
+#hud.discover.film #panels > .lo-checkcard { display: none !important; }
+#hud.discover.film #lo-shot { top: calc(3rem + env(safe-area-inset-top, 0px) + 66px); left: calc(12px + env(safe-area-inset-left, 0px)); }
+#hud.discover.film #zone-banner { top: 38%; width: calc(100% - 32px); }
+#hud.discover.film #dialogue { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+#hud.discover.film #dialogue .foot { display: none; }

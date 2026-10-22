@@ -318,6 +318,29 @@ function amberGate(root: string, showAmber: boolean): Plugin {
 }
 // ── end amber gate ──────────────────────────────────────────────────────────────
 
+// ── discover flag (WP-D0) ───────────────────────────────────────────────────────
+// src/discover/flags.ts DISCOVER_DEFAULT_ON_TOUCH is the one line that decides whether touch-only phones
+// land in „Entdecken“ instead of the mouse-and-keyboard notice (founder decision 1). The pre-boot gate in
+// index.html is a classic inline script that cannot import it: this plugin writes the value into the
+// gate's /*DISCOVER_DEFAULT_ON_TOUCH*/ marker (build and dev). A lost marker or flag fails the build.
+function discoverFlag(root: string): Plugin {
+  const file = path.join(root, 'src', 'discover', 'flags.ts');
+  return {
+    name: 'emai:discover-flag',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        const flag = fs.readFileSync(file, 'utf8').match(/export const DISCOVER_DEFAULT_ON_TOUCH(?:\s*:\s*boolean)?\s*=\s*(true|false)\s*;/);
+        if (!flag) throw new Error('src/discover/flags.ts: `export const DISCOVER_DEFAULT_ON_TOUCH = true | false;` not found');
+        const marker = /\/\*DISCOVER_DEFAULT_ON_TOUCH\*\/\s*(true|false)/;
+        if (!marker.test(html)) throw new Error('index.html: the pre-boot gate lost its /*DISCOVER_DEFAULT_ON_TOUCH*/ marker');
+        return html.replace(marker, `/*DISCOVER_DEFAULT_ON_TOUCH*/ ${flag[1]}`);
+      },
+    },
+  };
+}
+// ── end discover flag ───────────────────────────────────────────────────────────
+
 /**
  * BASE_PATH: the public URL path the build is served from, e.g. `BASE_PATH=/academy-world/ npm run build`
  * for GitHub Pages (.github/workflows/pages.yml). Default `/`, so dev, preview and every tools/* script
@@ -335,7 +358,7 @@ export default defineConfig(({ mode }) => {
   const showAmber = loadEnv(mode, root, 'VITE_').VITE_AMBER === '1';
   return {
     base: basePath(),
-    plugins: [amberGate(root, showAmber), rapierWasmAsFile(), ...duckWorker.plugins /* worker (WP5) */, thirdPartyNotices({ root, showAmber }), precompress(), previewLikeProduction()],
+    plugins: [discoverFlag(root) /* discover flag (WP-D0) */, amberGate(root, showAmber), rapierWasmAsFile(), ...duckWorker.plugins /* worker (WP5) */, thirdPartyNotices({ root, showAmber }), precompress(), previewLikeProduction()],
     worker: duckWorker.worker, // worker (WP5)
     resolve: {
       alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },

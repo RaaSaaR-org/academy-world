@@ -258,8 +258,13 @@ async function workerCase() {
   await ctx.close();
 }
 
+// „Entdecken“ (founder decision 1): once src/discover/flags.ts DISCOVER_DEFAULT_ON_TOUCH is true, touch-only
+// phones land in Discover instead of the notice; tools/discover-check.mjs --only gate checks that landing
+const discoverDefault = /DISCOVER_DEFAULT_ON_TOUCH(?:\s*:\s*boolean)?\s*=\s*true/.test(fs.readFileSync(path.join(ROOT, 'src', 'discover', 'flags.ts'), 'utf8'));
+
 try {
-  if (only.includes('phone')) {
+  if (only.includes('phone') && discoverDefault) pending.push('phone: DISCOVER_DEFAULT_ON_TOUCH is on, phones land in Discover (node tools/discover-check.mjs --only gate)');
+  else if (only.includes('phone')) {
     const t = [];
     const kb = [];
     for (let i = 0; i < runs; i++) {

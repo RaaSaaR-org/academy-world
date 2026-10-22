@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { EventBus } from './EventBus';
 import { Settings } from './Settings';
 import { parseParams, type LaunchParams } from './params';
-import { AUTO_QUALITY, RenderSystem } from './RenderSystem';
+import { AUTO_QUALITY, RenderSystem, type RenderOptions } from './RenderSystem';
 import { Environment } from './Environment';
 import { Physics, GROUPS, GROUP, groups, isSensorIgnore } from './Physics';
 import { Input } from './Input';
@@ -50,7 +50,21 @@ import { installRobots, type RobotsAdapter } from './zones/ext/robots';
 import { Frames } from './zones/frames';
 import type { PlotFrame } from './zones/manifest';
 
-export type Phase = 'loading' | 'start' | 'playing' | 'paused';
+/** 'discover': the mobile look-only mode (src/discover/, WP-D0); never reached without ?discover=1 */
+export type Phase = 'loading' | 'start' | 'playing' | 'paused' | 'discover';
+
+/**
+ * The hooks src/discover/index.ts exports (WP-D0). Game calls them only when params.discover is set:
+ * beforeCore after the fonts (the in-memory save, settings, strings), afterCore after createCore (the
+ * tier before the warm-up, the reachable areas, the player as an observer), place instead of
+ * placeInitialPlayer, start once the loading screen is gone (phase 'discover').
+ */
+export interface DiscoverBoot {
+  beforeCore(game: Game): void;
+  afterCore(game: Game): void;
+  place(game: Game): void;
+  start(game: Game): void | Promise<void>;
+}
 const FIXED = 1 / 60;
 /** C4: full-screen panels that stop game time (simulation, EMI's lines, run clocks, banner timers). Operate mode and custom modals keep running. */
 const FROZEN_KINDS = new Set(['pass', 'map', 'infocard', 'predict', 'credits']);
@@ -116,6 +130,18 @@ export class Game {
   private worldInstance: ZoneInstance | null = null;
   private worldState: import('./zones/createZoneContext').ZoneRuntimeState | null = null;
 
+  // ── Discover seams (WP-D0): all null / 0 without ?discover=1 ──
+  /** phase 'discover': drives the camera each frame (and the observer); null = the player camera (the film) */
+  cameraDriver: ((dt: number) => void) | null = null;
+  /** called after every drawn frame with its delta (Discover's perf monitor) */
+  frameHook: ((dt: number) => void) | null = null;
+  /** phase 'discover': frame cap (ms between drawn frames; 0 = display rate) */
+  frameCapMs = 0;
+  /** set by DiscoverBoot.beforeCore: options for the renderer createCore builds */
+  renderOptions: RenderOptions | undefined = undefined;
+  private discoverBoot: DiscoverBoot | null = null;
+  private capLast = 0;
+
   private acc = 0;
   private alpha = 0;
   private last = 0;
@@ -135,13 +161,15 @@ export class Game {
   private oddFrame = false;
 
   constructor(private app: HTMLElement) {
-    // boot hook (plan §3.5): the save migration runs before any reader, with the manifests already known
-    migrateAtBoot([...AREA_MANIFESTS.values()], RETIRED);
-    this.progress = new Progress(this.events);
+    // boot hook (plan §3.5): the save migration runs before any reader, with the manifests already known.
+    // Discover (WP-D0) never reads or writes the stored save: an in-memory Progress (seeded in beforeCore)
+    const discover = this.params.discover;
+    if (!discover) migrateAtBoot([...AREA_MANIFESTS.values()], RETIRED);
+    this.progress = new Progress(this.events, discover ? { memory: true } : undefined);
     // stamp scopes (plan §3.4): 'island' = the areas of kind 'lobe' (dev zones without a manifest count as lobes)
     this.progress.areaKind = (id) => AREA_MANIFESTS.get(id)?.kind ?? 'lobe';
     this.debugEnabled = this.params.debug;
-    if (this.params.reset) this.progress.reset();
+    if (this.params.reset && !discover) this.progress.reset();
     const lang: Lang = this.params.lang ?? this.settings.data.lang;
     this.i18n = new I18n(lang, () => this.progress.mode);
     document.documentElement.lang = lang;
@@ -180,8 +208,11 @@ export class Game {
       return m.default;
     });
     const worldP = this.params.world ? importRetry(() => import('@/world/index')) : null;
+    // Discover (WP-D0): its chunk downloads next to them (small, never on the critical path)
+    const discoverP = this.params.discover ? importRetry(() => import('@/discover/index')) : null;
     rapierP.catch(() => undefined); // awaited (and reported) below
     worldP?.catch(() => undefined); // loadWorld() falls back to the emergency ground
+    discoverP?.catch(() => undefined); // awaited (and reported) below
     try {
       L(0.02, 'fonts', 0.06);
       await Promise.race([
@@ -194,11 +225,17 @@ export class Game {
         wait(2500),
       ]).catch(() => undefined);
 
+      if (discoverP) {
+        this.discoverBoot = (await discoverP) as DiscoverBoot;
+        this.discoverBoot.beforeCore(this);
+      }
+
       L(0.06, 'physics', 0.56);
       const RAPIER = await this.creep(rapierP);
 
       L(0.56, 'renderer', 0.6);
       this.createCore(RAPIER);
+      this.discoverBoot?.afterCore(this);
 
       // plan §5.6: the area manifests are eager, so the island module reads them (names, glyphs,
       // railing gaps) via ctx.zones.list() during its init; area code loads later (the queue)
@@ -219,7 +256,8 @@ export class Game {
 
       L(0.93, 'shaders', 1);
       await textPreload;
-      this.placeInitialPlayer();
+      if (this.discoverBoot) this.discoverBoot.place(this);
+      else this.placeInitialPlayer();
       await this.warmUp();
       L(1, 'ready');
     } catch (err) {
@@ -230,7 +268,13 @@ export class Game {
     }
 
     this.loading.done();
-    if (this.params.skipIntro) this.beginPlay(this.progress.mode, false);
+    if (this.discoverBoot) {
+      this.phase = 'discover';
+      this.hud.setPlaying(false);
+      void Promise.resolve()
+        .then(() => this.discoverBoot!.start(this))
+        .catch((err) => console.error('[discover] start failed', err));
+    } else if (this.params.skipIntro) this.beginPlay(this.progress.mode, false);
     else {
       this.phase = 'start';
       this.startScreen.show();
@@ -303,7 +347,7 @@ export class Game {
   private createCore(RAPIER: typeof import('@dimforge/rapier3d-compat').default): void {
     const canvas = h('canvas', { id: 'game', tabindex: '0' });
     this.app.prepend(canvas);
-    this.rs = new RenderSystem(canvas, this.events);
+    this.rs = new RenderSystem(canvas, this.events, this.renderOptions);
     this.rs.applyQualitySetting(this.params.quality ?? this.settings.data.quality);
     this.materials = new MaterialLibrary(this.rs.maxAnisotropy);
     this.env = new Environment(this.rs);
@@ -836,8 +880,9 @@ export class Game {
     this.events.emit('island:tilt', { roll: this.env.tilt.rollDeg, pitch: this.env.tilt.pitchDeg });
   }
 
-  setLang(l: Lang): void {
-    this.settings.set('lang', l);
+  /** `persist` false (Discover): this session only, nothing stored */
+  setLang(l: Lang, persist = true): void {
+    this.settings.set('lang', l, persist);
     this.i18n.setLang(l);
     this.events.emit('lang:changed', { lang: l });
   }
@@ -858,7 +903,9 @@ export class Game {
     const cam = this.rs.camera;
     const booting = this.phase === 'loading';
     if (booting) {
-      if (this.params.skipIntro) this.player.updateCamera(1, 0, true);
+      // Discover: its own camera (the start card's pose) is the one the first frame uses
+      if (this.cameraDriver) this.cameraDriver(0);
+      else if (this.params.skipIntro) this.player.updateCamera(1, 0, true);
       else this.updateAttractCamera(0);
     }
     this.env.prepare(cam, this.player.renderFeet);
@@ -918,7 +965,8 @@ export class Game {
    * rescue volumes (plan §5.3 rule 8) call it.
    */
   rescuePlayer(reason: 'fell' | 'volume' = 'fell'): void {
-    if (this.respawning) return;
+    // Discover: the player is an observer (no collider, no gravity): nothing to rescue
+    if (this.respawning || this.phase === 'discover') return;
     this.respawning = true;
     this.events.emit('player:rescue', { reason });
     // the island's rescue point for the last safe position (layout.ts), else the nearest spawn
@@ -998,6 +1046,11 @@ export class Game {
     // C10's auto quality probes the GPU in its first seconds
     const probing = this.phase === 'start' && performance.now() < this.rs.probeUntil;
     if (this.phase === 'start' && !probing && (this.oddFrame = !this.oddFrame)) return;
+    // Discover: the tier's frame cap, the rule above generalised to a time-based limiter
+    if (this.frameCapMs > 0 && this.phase === 'discover') {
+      if (nowMs - this.capLast < this.frameCapMs - 1.5) return;
+      this.capLast = nowMs;
+    }
     const cpu0 = performance.now();
     const now = nowMs / 1000;
     let dt = this.last ? now - this.last : FIXED;
@@ -1006,7 +1059,7 @@ export class Game {
     const frozen = this.frozen;
     const idle = this.phase === 'paused' || frozen;
     // C10: measured only on real play frames (and the title probe), never while zones are still being built
-    this.rs.trackFrame(dt, this.zonesSettled && ((this.phase === 'playing' && !idle) || probing), this.cpuMs);
+    this.rs.trackFrame(dt, this.zonesSettled && ((this.phase === 'playing' && !idle) || probing || (this.phase === 'discover' && !idle)), this.cpuMs);
     // C2: nothing is simulated or drawn behind the opaque loading screen (warmUp() renders the one frame it needs)
     if (this.phase === 'loading') return;
     // C9: paused or behind a full-screen panel, the picture does not change: draw it once, then skip the frame
@@ -1022,9 +1075,13 @@ export class Game {
       if (!this.rs.warming) this.renderFrames--;
     }
 
-    const sim = (this.phase === 'playing' || this.phase === 'start') && !frozen;
+    const discovering = this.phase === 'discover';
+    const sim = (this.phase === 'playing' || this.phase === 'start' || discovering) && !frozen;
     const controlling = this.phase === 'playing' && !this.hud.modals.isOpen;
     if (this.phase === 'playing') this.handleActions(controlling);
+    // Discover: the camera and the observer (it places the player's feet) before the areas update
+    const driven = discovering && !!this.cameraDriver;
+    if (driven) this.cameraDriver!(dt);
     // game-time delta for the HUD, the game layer and the dialogue: 0 while paused or frozen (C4)
     const gdt = this.phase === 'paused' || frozen ? 0 : dt;
 
@@ -1069,7 +1126,8 @@ export class Game {
     this.hud.root.classList.toggle('cinematic', !this.operate.isActive && !!ov && ov.blend > 0.5);
 
     if (this.phase === 'start') this.updateAttractCamera(dt);
-    else this.player.updateCamera(this.alpha, this.phase === 'playing' ? gdt : 0, controlling);
+    // Discover's film (the camera detached, WP-D3): the director's shakes decay with the frame time there too
+    else if (!driven) this.player.updateCamera(this.alpha, this.phase === 'playing' || discovering ? gdt : 0, controlling);
 
     this.interaction.update(this.rs.camera, dt, controlling && !this.grab.held, this.player.collider);
     this.hud.updateFocus(this.interaction.focus, !!this.grab.held, this.grab.readout, this.phase === 'playing' && !this.hud.modals.isOpen);
@@ -1094,6 +1152,7 @@ export class Game {
     if (!this.rs.warming) this.rs.render(dt);
     this.input.endFrame();
     this.cpuMs += (performance.now() - cpu0 - this.cpuMs) * 0.05;
+    this.frameHook?.(dt);
     if (!this.ready && this.zonesSettled && ++this.framesSinceReady > 3) {
       this.ready = true;
       this.events.emit('game:ready');
@@ -1103,7 +1162,8 @@ export class Game {
   };
 
   private fixedStep(controlling: boolean): void {
-    this.player.fixedUpdate(FIXED, controlling);
+    // Discover: the observer places the player (src/discover/observer.ts); no controller step
+    if (this.phase !== 'discover') this.player.fixedUpdate(FIXED, controlling);
     this.grab.fixedUpdate(FIXED);
     this.zones.fixedUpdate(FIXED);
     if (this.worldCtx) {

@@ -1,0 +1,44 @@
+/*
+ * The Schauhalle viewer's layer (WP-D2, plan §3.4, §4): the framing toggle (top right), the size labels
+ * over the 3D view, and at the bottom the Größenwand line, the category tabs and the robot strip. The
+ * back button sits in the top bar while the viewer is open. Inherits Discover's tokens from `.dsc`.
+ */
+.dsv { position: absolute; inset: 0; pointer-events: none; }
+.dsv button { pointer-events: auto; }
+
+.dsc-top .dsv-back { flex: none; width: 44px; height: 44px; margin-left: -10px; display: grid; place-items: center; border: 0; background: none; border-radius: 8px; }
+
+.dsv-frame { position: absolute; top: calc(var(--top-h) + var(--sat) + 8px); right: calc(8px + var(--sar)); display: flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--glass); border: 1px solid var(--border-subtle); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.dsv-frame button { min-width: 44px; min-height: 40px; padding: 0 12px; border: 0; border-radius: 7px; background: none; font-size: 0.875rem; font-weight: 600; color: var(--text-2); }
+.dsv-frame button[aria-pressed='true'] { background: var(--elevated); color: var(--text); box-shadow: inset 0 -2px 0 var(--orange); }
+
+.dsv-labels { position: absolute; inset: 0; overflow: hidden; }
+.dsv-lab { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; padding: 2px 8px 2px 7px; border-left: 3px solid var(--text-2); border-radius: 0 4px 4px 0; background: rgba(20, 19, 18, 0.86); font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.04em; color: var(--text); white-space: nowrap; will-change: transform; }
+.dsv-lab.du { border-left-color: var(--orange); }
+.dsv-lab.emi { border-left-color: var(--teal); }
+.dsv-lab.robot { border-left-color: var(--text); }
+.dsv-lab .chip { font-size: 0.625rem; padding: 0 6px; }
+.dsv-lab[hidden] { display: none; }
+
+.dsv-pick { position: absolute; left: calc(8px + var(--sal)); right: calc(8px + var(--sar)); bottom: calc(6rem + var(--sab) + 8px); display: grid; gap: 6px; }
+.dsv-line { margin: 0 4px; font-size: 0.8125rem; line-height: 1.35; color: var(--text-2); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
+.dsv-tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+.dsv-tabs::-webkit-scrollbar, .dsv-strip::-webkit-scrollbar { display: none; }
+.dsv-tab { flex: 1 1 auto; min-height: 40px; padding: 0 8px; border: 0; border-radius: 8px; background: var(--glass); font-family: var(--font-mono) !important; font-size: 0.6875rem !important; letter-spacing: 0.04em; color: var(--text-2) !important; white-space: nowrap; }
+.dsv-tab[aria-selected='true'] { color: var(--text) !important; background: var(--surface); box-shadow: inset 0 -2px 0 var(--orange); }
+.dsv-strip { display: flex; gap: 6px; overflow-x: auto; scroll-behavior: smooth; padding-bottom: 2px; scrollbar-width: none; }
+.dsv-rb { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); font-size: 0.9375rem; white-space: nowrap; }
+.dsv-rb[aria-pressed='true'] { border-color: var(--orange); background: var(--orange-bg); box-shadow: inset 0 0 0 1px var(--orange); }
+
+/* the sheet half or full open (portrait): the card has the screen, the picker steps aside */
+.dsv[data-snap='half'] .dsv-pick, .dsv[data-snap='full'] .dsv-pick, .dsv[data-snap='half'] .dsv-labels, .dsv[data-snap='full'] .dsv-labels { visibility: hidden; }
+
+@media (orientation: landscape) and (max-height: 600px), (min-width: 900px) {
+  .dsv-frame { right: calc(min(22.5rem, 46vw) + 24px + var(--sar)); }
+  .dsv-pick { bottom: calc(8px + var(--sab)); right: calc(min(22.5rem, 46vw) + 24px + var(--sar)); gap: 4px; }
+  /* the name plates carry the same heights; the 3D view needs the room */
+  .dsv-line { display: none; }
+  .dsv-tab { min-height: 36px; }
+  .dsv-rb { min-height: 40px; }
+  .dsv[data-snap='half'] .dsv-pick, .dsv[data-snap='full'] .dsv-pick, .dsv[data-snap='half'] .dsv-labels, .dsv[data-snap='full'] .dsv-labels { visibility: visible; }
+}

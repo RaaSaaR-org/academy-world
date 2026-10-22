@@ -85,7 +85,20 @@ export class Progress {
     return this.ro;
   }
 
-  constructor(private events: EventBus) {
+  /** Discover (src/discover/save.ts): an in-memory save that never reads or writes the stored one */
+  private readonly memory: boolean;
+
+  constructor(
+    private events: EventBus,
+    o: { memory?: boolean } = {},
+  ) {
+    this.memory = !!o.memory;
+    if (this.memory) {
+      // empty and read-only until adoptMemory(); the stored save is never read
+      this.data = emptyV2();
+      this.ro = true;
+      return;
+    }
     const boot = takeBootSave();
     if (boot) {
       this.data = boot.data;
@@ -96,6 +109,12 @@ export class Progress {
       this.data = isObj(loaded) && loaded.v === 2 ? normalizeV2(loaded) : emptyV2();
       this.ro = false;
     }
+  }
+
+  /** Discover: replace the in-memory save (a copy). Throws unless the Progress was made with { memory: true }. */
+  adoptMemory(data: ProgressDataV2): void {
+    if (!this.memory) throw new Error('Progress.adoptMemory(): only for an in-memory Progress ({ memory: true })');
+    this.data = normalizeV2(JSON.parse(JSON.stringify(data)) as Record<string, unknown>);
   }
 
   /**
@@ -453,6 +472,12 @@ export class Progress {
    */
   reset(): void {
     const mode = this.data.mode;
+    // Discover: the stored saves stay untouched and nothing is ever written
+    if (this.memory) {
+      this.data = { ...emptyV2(), mode };
+      this.events.emit('progress:reset', {});
+      return;
+    }
     this.data = { ...emptyV2(), mode };
     removeKey(SAVE_KEY_V2);
     removeKey(SAVE_KEY_V1);
