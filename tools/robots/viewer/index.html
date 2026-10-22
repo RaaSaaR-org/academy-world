@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Robot viewer (dev)</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #1c1917;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Dev-only page for tools/robot-gallery.mjs and tools/robots/check.mjs (served by a private
+         Vite dev server; not part of the game build). It loads robots through src/core/robots. -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,376 @@
+{
+ "kind": "traumdaten-kurzlauf",
+ "version": 1,
+ "generator": "tools/traum/kurzlauf.mjs (WP10) · src/zones/traumhangar/model.ts",
+ "seed": 1,
+ "title": {
+  "de": "So entsteht das Flugmodell",
+  "en": "How the flight model is made"
+ },
+ "subtitle": {
+  "de": "Traumdaten: offline gut heißt nicht gut",
+  "en": "Dream data: good offline doesn’t mean good"
+ },
+ "chips": {
+  "offline": "illustrativ",
+  "closed": "sim-aufzeichnung",
+  "flugmodell": "fiktion",
+  "dream": "traum"
+ },
+ "durationS": 40,
+ "beats": [
+  {
+   "t0": 0,
+   "t1": 8,
+   "id": "traeume",
+   "caption": {
+    "de": "20 echte Demos. Das Weltmodell träumt 200 dazu.",
+    "en": "20 real demos. The world model dreams 200 more."
+   }
+  },
+  {
+   "t0": 8,
+   "t1": 14,
+   "id": "pruefen",
+   "caption": {
+    "de": "Drei Träume brechen die Physik. Sie fliegen raus.",
+    "en": "Three dreams break physics. They are filtered out."
+   }
+  },
+  {
+   "t0": 14,
+   "t1": 20,
+   "id": "offline",
+   "caption": {
+    "de": "Offline-Test: „alle Träume“ sieht am besten aus.",
+    "en": "Offline test: “all dreams” looks best."
+   }
+  },
+  {
+   "t0": 20,
+   "t1": 24,
+   "id": "stillstand",
+   "caption": {
+    "de": "Noch besser offline: Stillstand. Wer nichts tut, macht offline keine Fehler.",
+    "en": "Even better offline: standing still. Do nothing, and offline you make no mistakes."
+   }
+  },
+  {
+   "t0": 24,
+   "t1": 33,
+   "id": "geschlossen",
+   "caption": {
+    "de": "Geschlossener Lauf: n = 20 je Mischung am Wagen.",
+    "en": "Closed loop: n = 20 per mix on the cart."
+   }
+  },
+  {
+   "t0": 33,
+   "t1": 40,
+   "id": "flugmodell",
+   "caption": {
+    "de": "Das Flugmodell: die beste Mischung im geschlossenen Lauf.",
+    "en": "The flight model: the best mix in the closed loop."
+   }
+  }
+ ],
+ "tiles": [
+  {
+   "error": null,
+   "decoy": "nah",
+   "phase": 0.26002015196718276,
+   "task": "wagen"
+  },
+  {
+   "error": "gleiten",
+   "decoy": "ok",
+   "phase": 0.6499106525443494,
+   "task": "kiste"
+  },
+  {
+   "error": "durchgriff",
+   "decoy": "ok",
+   "phase": 0.5654761083424091,
+   "task": "wagen"
+  },
+  {
+   "error": "verschwindet",
+   "decoy": "ok",
+   "phase": 0.36577526526525617,
+   "task": "kiste"
+  },
+  {
+   "error": null,
+   "decoy": "ok",
+   "phase": 0.3869188725948334,
+   "task": "wagen"
+  },
+  {
+   "error": null,
+   "decoy": "kippt",
+   "phase": 0.029612482525408268,
+   "task": "wagen"
+  },
+  {
+   "error": null,
+   "decoy": "schnell",
+   "phase": 0.5926582384854555,
+   "task": "kiste"
+  },
+  {
+   "error": null,
+   "decoy": "ok",
+   "phase": 0.6262166644446552,
+   "task": "wagen"
+  }
+ ],
+ "mixes": [
+  {
+   "id": "echt",
+   "label": {
+    "de": "nur echt (20 Demos)",
+    "en": "real only (20 demos)"
+   },
+   "offline": 0.3,
+   "closed": {
+    "k": 2,
+    "n": 20,
+    "p": 10,
+    "lo": 2.8,
+    "hi": 30.1,
+    "lanes": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "alle",
+   "label": {
+    "de": "echt + alle Träume",
+    "en": "real + all dreams"
+   },
+   "offline": 0.18,
+   "closed": {
+    "k": 6,
+    "n": 20,
+    "p": 30,
+    "lo": 14.5,
+    "hi": 51.9,
+    "lanes": [
+     false,
+     true,
+     false,
+     false,
+     true,
+     false,
+     true,
+     false,
+     false,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     false,
+     true,
+     false
+    ]
+   }
+  },
+  {
+   "id": "geprueft",
+   "label": {
+    "de": "echt + geprüfte Träume",
+    "en": "real + checked dreams"
+   },
+   "offline": 0.2,
+   "closed": {
+    "k": 10,
+    "n": 20,
+    "p": 50,
+    "lo": 29.9,
+    "hi": 70.1,
+    "lanes": [
+     true,
+     true,
+     true,
+     false,
+     true,
+     false,
+     false,
+     false,
+     true,
+     true,
+     false,
+     false,
+     false,
+     true,
+     false,
+     true,
+     true,
+     true,
+     false,
+     false
+    ]
+   }
+  },
+  {
+   "id": "stillstand",
+   "label": {
+    "de": "Stillstand (tut nichts)",
+    "en": "Standing still (does nothing)"
+   },
+   "offline": 0.08,
+   "hidden": true,
+   "closed": {
+    "k": 0,
+    "n": 20,
+    "p": 0,
+    "lo": 0,
+    "hi": 16.1,
+    "lanes": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ ],
+ "offlineWinner": "stillstand",
+ "offlineWinnerReal": "alle",
+ "closedWinner": "geprueft",
+ "installed": {
+  "mix": "geprueft",
+  "label": {
+   "de": "echt + geprüfte Träume",
+   "en": "real + checked dreams"
+  },
+  "pp": 40,
+  "lo": 12,
+  "hi": 61,
+  "n": 20
+ },
+ "deal": {
+  "a": {
+   "offer": {
+    "de": "10.000 Träume, offline +40 %",
+    "en": "10,000 dreams, offline +40 %"
+   },
+   "offline": 0.18,
+   "closed": {
+    "mix": "alle",
+    "k": 6,
+    "n": 20,
+    "p": 30,
+    "lo": 14.5,
+    "hi": 51.9
+   }
+  },
+  "b": {
+   "offer": {
+    "de": "1.000 geprüfte Träume + Messung im geschlossenen Lauf",
+    "en": "1,000 checked dreams + a closed-loop measurement"
+   },
+   "offline": 0.2,
+   "closed": {
+    "mix": "geprueft",
+    "k": 10,
+    "n": 20,
+    "p": 50,
+    "lo": 29.9,
+    "hi": 70.1
+   }
+  }
+ },
+ "horizon": {
+  "rows": [
+   {
+    "horizon": 0.5,
+    "k": 7,
+    "n": 20
+   },
+   {
+    "horizon": 2,
+    "k": 17,
+    "n": 20
+   },
+   {
+    "horizon": 8,
+    "k": 5,
+    "n": 20
+   }
+  ],
+  "best": 2
+ },
+ "befund": {
+  "messgroesse": {
+   "de": "Erfolg im geschlossenen Lauf statt Offline-Fehler; der Vorhersagehorizont.",
+   "en": "Closed-loop success instead of offline error; the prediction horizon."
+  },
+  "grenze": {
+   "de": "Weltmodelle halluzinieren Physik, der Fehler wächst mit dem Horizont, Objekte verschwinden.",
+   "en": "World models hallucinate physics, the error grows with the horizon, objects vanish."
+  },
+  "frage": {
+   "de": "Frage 9: Was ist das Ergebnis in einer zweiten Umgebung?",
+   "en": "Question 9: What is the result in a second environment?"
+  },
+  "folgefragen": [
+   {
+    "de": "Wurde geschlossen am Roboter gemessen, mit n und Intervall?",
+    "en": "Was it measured closed-loop on the robot, with n and an interval?"
+   },
+   {
+    "de": "Wie weit reicht die Vorhersage, und wie oft wird neu geplant?",
+    "en": "How far does the prediction reach, and how often does it replan?"
+   },
+   {
+    "de": "Kennt das Weltmodell deinen Roboter, deine Kameras, deine Teile?",
+    "en": "Does the world model know your robot, your cameras, your parts?"
+   }
+  ],
+  "fuerDeinWerk": {
+   "de": "Synthetische Daten nur mit Ablation und geschlossener Messung; Lizenz der Gewichte prüfen – nicht-kommerziell kommt vor.",
+   "en": "Synthetic data only with an ablation and a closed-loop measurement; check the licence of the weights – non-commercial happens."
+  }
+ }
+}

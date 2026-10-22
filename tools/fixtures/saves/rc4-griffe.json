@@ -1,0 +1,526 @@
+{
+  "name": "rc4-griffe",
+  "rule": "§3.5 rule 8 · griffe ◆ earned",
+  "about": "the rc4 Greifwerkstatt ◆ „200 Griffe“ is retired (D33): its stamp, challenge and prediction move to legacy; M3 drops to in Arbeit; the unprefixed best gripTrials stays for „trials measured“",
+  "params": "mode=entdecker",
+  "retired": [
+    "greifwerkstatt.griffe"
+  ],
+  "storage": {
+    "progress": {
+      "v": 1,
+      "mode": "entdecker",
+      "stamps": {
+        "sensordom.messstrecke": {
+          "t": 1792285544351,
+          "value": {
+            "de": "σ(6 m) = 7,8 cm · Gegenlicht ×1,8",
+            "en": "σ(6 m) = 7.8 cm · backlight ×1.8"
+          },
+          "skipped": false,
+          "curve": [
+            1.9,
+            18.3,
+            78.3,
+            176.8
+          ]
+        },
+        "greifwerkstatt.gelenke": {
+          "t": 1792285564470,
+          "value": {
+            "de": "3/3 Ringe · 0:04 min · Ziel",
+            "en": "3/3 rings · 0:04 min · target"
+          },
+          "skipped": false,
+          "curve": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "greifwerkstatt.ei": {
+          "t": 1792285572786,
+          "value": {
+            "de": "Ei: 5,0 N gehalten · nasses Glas/Stahl rutscht unter 23,6 N",
+            "en": "Egg: 5.0 N held · wet glass/steel slips below 23.6 N"
+          },
+          "skipped": false,
+          "curve": [
+            5.0063450025763245,
+            23.62
+          ]
+        },
+        "greifwerkstatt.griffe": {
+          "t": 1792285590534,
+          "value": {
+            "de": "Kamera 54 % [47–60] · +Taktil 86 % [81–90] · n = 200",
+            "en": "Camera 54 % [47–60] · +tactile 86 % [81–90] · n = 200"
+          },
+          "skipped": false,
+          "curve": [
+            60,
+            56,
+            58,
+            58,
+            55,
+            52,
+            51,
+            52,
+            54,
+            53
+          ]
+        }
+      },
+      "visited": {
+        "greifwerkstatt": 1792285557870
+      },
+      "zoneData": {
+        "world": {
+          "onboarding": 3,
+          "logoShown": 4,
+          "liftAt": "foyer"
+        },
+        "greifwerkstatt": {
+          "greeted": true,
+          "aSkipped": false,
+          "bTally": {
+            "ok": 7,
+            "broken": 0,
+            "best": 5,
+            "bestBand": 5
+          },
+          "cPredRun": {
+            "k": 10,
+            "n": 20
+          },
+          "cRuns": [
+            {
+              "s": "k",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "obrooorbrboobobooobb"
+            },
+            {
+              "s": "t",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "ororoooooooooroooboo"
+            },
+            {
+              "s": "k",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oroorobrboboorobobooobobororoorooboroooooobrbrbooooooororoooorbbrbobbrbororoobbobooborobboobobrorboorobbrrrrorroborobrboooroobboborbooobooobooroboorobbooooooboboobooooorroboobbrbbboboorbrooooooobbbboo"
+            },
+            {
+              "s": "t",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oboooooooooooobroroooooooooooooobooooooooooooooooooooooooooooboooooooorooooobrooooooobooooboooooooooooooorooooooooooboooooooooooooroooooooobroooroooroooorooooobroooooorooooooobooroooooooooooooobrbrooo"
+            },
+            {
+              "s": "k",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "obrooorbrboobobooobb"
+            },
+            {
+              "s": "t",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "ororoooooooooroooboo"
+            },
+            {
+              "s": "k",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oroorobrboboorobobooobobororoorooboroooooobrbrbooooooororoooorbbrbobbrbororoobbobooborobboobobrorboorobbrrrrorroborobrboooroobboborbooobooobooroboorobbooooooboboobooooorroboobbrbbboboorbrooooooobbbboo"
+            },
+            {
+              "s": "t",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oboooooooooooobroroooooooooooooobooooooooooooooooooooooooooooboooooooorooooobrooooooobooooboooooooooooooorooooooooooboooooooooooooroooooooobroooroooroooorooooobroooooorooooooobooroooooooooooooobrbrooo"
+            }
+          ],
+          "aBestJoint": 48,
+          "cPredicted": 10
+        },
+        "sensordom": {
+          "tags": [
+            [
+              "becher",
+              "tiefe"
+            ],
+            [
+              "flasche",
+              "rgb"
+            ],
+            [
+              "samt",
+              "lidar"
+            ],
+            [
+              "kabel",
+              "seg"
+            ],
+            [
+              "spiegel",
+              "rgb"
+            ]
+          ],
+          "revealed": true,
+          "runs": [
+            {
+              "z": 1,
+              "light": "labor",
+              "errs": [
+                1.0635290030881979,
+                -0.45738264943874507,
+                1.1446679370572361,
+                1.506354319013082,
+                1.3763037102326126,
+                1.6524195664215016,
+                0.644180906258323,
+                -0.5200302778202417,
+                -2.0214136283001856,
+                -2.1095272242406415,
+                2.740938515803996,
+                -3.542576292550921,
+                2.1951974237759173,
+                -0.5156319706975794,
+                2.7465955525286905,
+                -2.0917468076218246,
+                -1.1644712594331323,
+                1.817226925353935,
+                3.549020062442454,
+                -0.016884821350280407,
+                3.430210809901415,
+                1.7714109004571288,
+                0.6949118333881468,
+                -2.62189638789661,
+                2.0108830913961837,
+                -3.2950018536892274,
+                1.5062320861944818,
+                5.141108881733279,
+                -3.5679585044318647,
+                1.8570829004459553
+              ],
+              "drop": 0
+            },
+            {
+              "z": 3,
+              "light": "labor",
+              "errs": [
+                5.1094882962624,
+                -8.83554324433131,
+                1.7798814618738112,
+                15.023908547469901,
+                11.365378407400932,
+                -5.237977927002233,
+                11.809692162919445,
+                -21.0076539302014,
+                -6.440782629930511,
+                8.917781652331081,
+                18.086588046888885,
+                -17.96635082438802,
+                -20.245942616892105,
+                22.27369309459737,
+                2.1942426638805888,
+                -14.784549000100093,
+                -8.143194634392874,
+                1.541538450585674,
+                5.516043857369555,
+                0.2695751264194516,
+                -7.163162266298904,
+                -9.301519621351112,
+                29.85079895680496,
+                19.53570627045958,
+                -17.375626658382508,
+                14.919446719988173,
+                -22.85738677130695,
+                26.658335608814486,
+                -21.68301086260021,
+                27.98846896677075
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "labor",
+              "errs": [
+                39.60485475395324,
+                -14.78892091223751,
+                -67.9350538939981,
+                -13.965577253813745,
+                33.69523773121241,
+                93.96428262597436,
+                5.329544847441837,
+                -64.72917402266371,
+                -137.25080520155632,
+                179.82056192726282,
+                30.025879910336183,
+                -49.189520832013905,
+                -20.421906905346322,
+                136.1293118078648,
+                126.47758918565683,
+                -103.92748308828833,
+                -7.506665331376827,
+                -34.43762710921824,
+                94.58997675608828,
+                81.3091968403348,
+                151.3414958394202,
+                41.27479568114194,
+                -11.906590744490726,
+                77.70868264736677,
+                110.11079386297256,
+                -11.287939778064544,
+                0.8950063347981159,
+                -71.340469072394,
+                18.32472061813311,
+                -128.7164297740841
+              ],
+              "drop": 0
+            },
+            {
+              "z": 9,
+              "light": "labor",
+              "errs": [
+                53.192553550293,
+                -128.28523656570508,
+                24.876256015456313,
+                -103.74647171931932,
+                -172.96230758391386,
+                229.55699193770508,
+                98.65888840001301,
+                -149.19265694954794,
+                -70.28822311232362,
+                270.683510826048,
+                263.70677981309365,
+                -76.95120449705037,
+                278.3106976571099,
+                -17.840563899453464,
+                113.68868902993668,
+                -78.66178787894746,
+                -119.95772141650292,
+                125.49764351198654,
+                287.03735851580785,
+                4.383764818087637,
+                63.567849194715755,
+                91.54393294745772,
+                -24.800984317101488,
+                52.75253689966857,
+                -175.85080699989223,
+                -287.2625069626064,
+                -145.25020387036966,
+                259.72420825652233,
+                84.81492970147131,
+                -52.98613206140122
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "gegen",
+              "errs": [
+                -50.78421362939203,
+                397.61966830022214,
+                -31.437022982063848,
+                -48.54977433596072,
+                256.96365562945766,
+                -181.65375025918974,
+                -105.41797984535913,
+                170.0728461868962,
+                44.37080821338501,
+                -258.9498339094714,
+                -458.3641036418201,
+                -171.2802161683106,
+                -16.465450287256175,
+                156.11176476215437,
+                -201.86249476817912,
+                -82.54407588758032,
+                -155.463490959213,
+                -271.0907760095915,
+                -50.320343661930174,
+                -2.960924961182542,
+                185.91327167060626,
+                144.81257839617103
+              ],
+              "drop": 8
+            }
+          ],
+          "grip": {
+            "labor": 3,
+            "gegen": 1,
+            "judged": true
+          }
+        }
+      },
+      "predictions": {
+        "sensordom.messstrecke": {
+          "predicted": 12,
+          "measured": 78.3121173532147,
+          "min": 2,
+          "max": 150,
+          "scale": "log",
+          "deviation": 43.446458852387224
+        },
+        "greifwerkstatt.griffe": {
+          "predicted": 20,
+          "measured": 10,
+          "min": 0,
+          "max": 20,
+          "scale": "linear",
+          "deviation": 50
+        }
+      },
+      "questions": [
+        2,
+        5,
+        9
+      ],
+      "album": [
+        "singularitaet"
+      ],
+      "best": {
+        "sensordom.darkroomTime": 38,
+        "sensordom.sigma6": 78.3,
+        "ringTime": 48,
+        "gripForceError": 0,
+        "gripTrials": 200
+      },
+      "challenges": {
+        "sensordom.messstrecke": {
+          "best": null,
+          "stars": 3,
+          "attempts": 3,
+          "last": null,
+          "t": 1792285649068
+        },
+        "greifwerkstatt.gelenke": {
+          "best": 48,
+          "stars": 3,
+          "attempts": 2,
+          "last": 48,
+          "t": 1792285652954
+        },
+        "greifwerkstatt.ei": {
+          "best": 5,
+          "stars": 3,
+          "attempts": 3,
+          "last": 5,
+          "t": 1792285680050
+        },
+        "greifwerkstatt.griffe": {
+          "best": null,
+          "stars": 3,
+          "attempts": 2,
+          "last": null,
+          "t": 1792285682322
+        }
+      },
+      "collectibles": [],
+      "lastZone": "greifwerkstatt"
+    }
+  },
+  "expect": {
+    "source": "v1",
+    "readOnly": false,
+    "v2Written": true,
+    "v1Unchanged": true,
+    "islandStamps": 3,
+    "allStamps": 3,
+    "legacyStamps": [
+      "greifwerkstatt.griffe"
+    ],
+    "legacyChallenges": [
+      "greifwerkstatt.griffe"
+    ],
+    "legacyPredictions": [
+      "greifwerkstatt.griffe"
+    ],
+    "flight": "ground",
+    "start": {
+      "glideSeen": true,
+      "probestart": true
+    },
+    "systems": {
+      "M1": "bereit",
+      "M3": "arbeit"
+    },
+    "lift": 1,
+    "startklar": false,
+    "armed": false,
+    "kielOpen": false,
+    "regionOpen": true,
+    "world": {
+      "logoShown": 3
+    },
+    "worldAbsent": [
+      "ascentSeen"
+    ],
+    "keep": [
+      {
+        "path": [
+          "best",
+          "gripTrials"
+        ],
+        "value": 200
+      },
+      {
+        "path": [
+          "legacy",
+          "from"
+        ],
+        "value": "rc4"
+      },
+      {
+        "path": [
+          "legacy",
+          "stamps",
+          "greifwerkstatt.griffe"
+        ],
+        "value": {
+          "t": 1792285590534,
+          "value": {
+            "de": "Kamera 54 % [47–60] · +Taktil 86 % [81–90] · n = 200",
+            "en": "Camera 54 % [47–60] · +tactile 86 % [81–90] · n = 200"
+          },
+          "skipped": false,
+          "curve": [
+            60,
+            56,
+            58,
+            58,
+            55,
+            52,
+            51,
+            52,
+            54,
+            53
+          ]
+        }
+      },
+      {
+        "path": [
+          "legacy",
+          "challenges",
+          "greifwerkstatt.griffe",
+          "stars"
+        ],
+        "value": 3
+      }
+    ],
+    "pool": 84,
+    "stars": 9
+  }
+}

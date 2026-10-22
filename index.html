@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#141414" />
+    <!-- unlisted: the public link is shared, not indexed (a robots.txt under a project sub-path is ignored) -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="EmAI Academy Island — Robotik und Physical AI zum Anfassen. Messung statt Marketing." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <!-- C8: inert until the pre-boot gate passes (a phone or an old browser never downloads the fonts) -->
+    <link rel="preload" href="/src/ui/fonts/SpaceGrotesk-Bold.woff" as="font" type="font/woff" crossorigin media="not all" data-gate />
+    <link rel="preload" href="/src/ui/fonts/Geist-Regular.woff" as="font" type="font/woff" crossorigin media="not all" data-gate />
+    <link rel="preload" href="/src/ui/fonts/GeistMono-Medium.woff" as="font" type="font/woff" crossorigin media="not all" data-gate />
+    <title>EmAI Academy</title>
+    <!-- C8: the loading shell paints before any script or stylesheet arrives. These rules own #loading (hud.css loads later). -->
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #141414; color: #a8a29e; font-family: Geist, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+      #app { position: fixed; inset: 0; }
+      html #loading { position: absolute; inset: 0; z-index: 50; box-sizing: border-box; padding: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; background: radial-gradient(ellipse at 50% 40%, #1f1c1a 0%, #141414 60%); transition: opacity 0.6s ease; pointer-events: auto; }
+      html #loading.done { opacity: 0; pointer-events: none; }
+      html #loading.hidden { display: none; }
+      html #loading .mark { line-height: 0; animation: emai-fade 0.8s ease both; }
+      html #loading .wm { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: #f5f5f4; animation: emai-fade 0.8s 0.1s ease both; }
+      html #loading .wm b { color: #ff6700; font-weight: 700; }
+      html #loading .wm span { color: #a8a29e; font-weight: 500; }
+      html #loading .bar { position: relative; width: 320px; max-width: 80vw; height: 8px; border-radius: 999px; background: #292929; overflow: hidden; }
+      html #loading .bar > i { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #cc5200, #ff6700, #ff8534); transform-origin: 0 50%; transform: scaleX(0); transition: transform 0.3s ease; will-change: transform; }
+      /* compositor-only shimmer over the filled part, and a CSS-only indeterminate bar before the first step */
+      html #loading .bar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent); transform: translateX(-100%); animation: emai-shimmer 1.8s ease-in-out infinite; }
+      html #loading.indet .bar > i { width: 40%; transform: translateX(-100%); transition: none; animation: emai-indet 1.4s ease-in-out infinite; }
+      html #loading.indet .bar::after, html #loading.failed .bar::after { animation: none; opacity: 0; }
+      html #loading.failed .bar, html #loading.gate .bar { display: none; }
+      html #loading .status { min-height: 18px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: #a8a29e; }
+      html #loading.failed .status { display: none; }
+      html #loading .err { max-width: 560px; display: grid; gap: 8px; color: #a8a29e; font-family: Geist, system-ui, sans-serif; font-size: 15px; line-height: 1.5; }
+      html #loading .err-alt { font-size: 13px; opacity: 0.85; }
+      html #loading .err:empty, html #loading .actions:empty { display: none; }
+      html #loading .err-title { color: #f5f5f4; font-size: 17px; font-weight: 600; }
+      html #loading .err-detail { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 12px; color: #a8a29e; }
+      html #loading .err-detail summary { cursor: pointer; }
+      html #loading .err-detail code { display: block; margin-top: 6px; white-space: pre-wrap; word-break: break-word; }
+      html #loading .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+      html #loading .actions button { font: 600 15px Geist, system-ui, sans-serif; border-radius: 8px; padding: 11px 18px; border: 1px solid #3d3d3d; background: transparent; color: #f5f5f4; cursor: pointer; }
+      html #loading .actions button.primary { background: #ff6700; border-color: #ff6700; color: #141414; }
+      html #loading .actions button:focus-visible { outline: 2px solid #f5f5f4; outline-offset: 2px; }
+      @keyframes emai-fade { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes emai-shimmer { to { transform: translateX(100%); } }
+      @keyframes emai-indet { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+      @media (prefers-reduced-motion: reduce) {
+        html #loading .mark, html #loading .wm, html #loading .bar::after { animation: none; }
+        html #loading.indet .bar > i { animation: none; transform: translateX(75%); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading" class="indet" role="status" aria-live="polite">
+        <div class="mark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="76" height="76" role="img" aria-label="EmAI"><circle cx="400" cy="400" r="400" fill="#141414"/><path d="m 400,775 a 15,15 0 0 0 0,-30 30,30 0 0 1 0,-60 45,45 0 0 0 0,-90 60,60 0 0 0 0,120 75,75 0 0 0 0,-150 90,90 0 0 1 0,-180 105,105 0 0 0 0,-210 120,120 0 0 0 0,240 135,135 0 0 0 0,-270 150,150 0 0 0 0,300 165,165 0 0 0 0,-330 180,180 0 0 0 0,360 195,195 0 0 0 0,-390 210,210 0 0 0 0,420 225,225 0 0 0 0,-450 240,240 0 0 0 0,480 255,255 0 0 0 0,-510 m 0,750 a 375,375 0 0 0 0,-750 375,375 0 0 0 0,750" fill="none" stroke="#FF6700" stroke-width="8"/></svg></div>
+        <div class="wm">Em<b>AI</b><span> Academy</span></div>
+        <div class="bar"><i></i></div>
+        <div class="status">Insel wird geladen</div>
+        <div class="err"></div>
+        <div class="actions"></div>
+      </div>
+    </div>
+    <noscript>EmAI Academy benötigt JavaScript und WebGL2. · EmAI Academy needs JavaScript and WebGL2.</noscript>
+    <script>
+      // C8 pre-boot gate (classic inline script, runs before any download): WebGL2, class static blocks
+      // (three r186 → Safari 16.4+), touch-only devices. On failure the shell says so in both languages and
+      // nothing else is downloaded; touch laptops may load anyway. main.ts waits for window.__emaiGate.go.
+      (function () {
+        var d = document, w = window, el = d.getElementById('loading');
+        var lang = 'de';
+        try {
+          var q = new URLSearchParams(location.search).get('lang');
+          var s = JSON.parse(localStorage.getItem('emai-academy-island/v1:settings') || 'null');
+          if (q === 'de' || q === 'en') lang = q;
+          else if (s && (s.lang === 'de' || s.lang === 'en')) lang = s.lang;
+          else if (!/^de\b/i.test(navigator.language || 'de')) lang = 'en';
+        } catch (e) {}
+        d.documentElement.lang = lang;
+        el.querySelector('.status').textContent = lang === 'en' ? 'Loading island' : 'Insel wird geladen';
+        var reason = null;
+        try {
+          var c = d.createElement('canvas'), gl = c.getContext('webgl2');
+          if (!gl) reason = 'webgl2';
+          else { var lc = gl.getExtension('WEBGL_lose_context'); if (lc) lc.loseContext(); }
+        } catch (e) { reason = 'webgl2'; }
+        if (!reason) { try { new Function('class A { static { } }'); } catch (e) { reason = 'old'; } }
+        // B4: the build loads its chunks through an import map (Firefox 108+). Firefox 93–107 pass the test
+        // above but would load a blank page. Chromium 94–95 lack HTMLScriptElement.supports but have import maps.
+        if (!reason) {
+          try {
+            var S = w.HTMLScriptElement;
+            if (S && typeof S.supports === 'function') { if (!S.supports('importmap')) reason = 'old'; }
+            else if (/Firefox\//.test(navigator.userAgent || '')) reason = 'old';
+          } catch (e) { reason = 'old'; }
+        }
+        if (!reason) {
+          try { if (w.matchMedia('(pointer: coarse)').matches && !w.matchMedia('(any-pointer: fine)').matches) reason = 'touch'; } catch (e) {}
+        }
+        var go;
+        var gate = (w.__emaiGate = { ok: !reason, reason: reason, lang: lang, go: new Promise(function (r) { go = r; }) });
+        function pass() {
+          gate.ok = true;
+          var links = d.querySelectorAll('link[data-gate]');
+          for (var i = 0; i < links.length; i++) {
+            var l = d.createElement('link');
+            l.rel = 'preload'; l.href = links[i].href; l.as = 'font'; l.type = links[i].type; l.crossOrigin = 'anonymous';
+            d.head.appendChild(l);
+          }
+          el.classList.remove('gate');
+          el.querySelector('.err').textContent = '';
+          el.querySelector('.actions').textContent = '';
+          el.querySelector('.status').textContent = lang === 'en' ? 'Loading island' : 'Insel wird geladen';
+          go();
+        }
+        if (!reason) return pass();
+        var T = {
+          webgl2: ['WebGL2 ist nicht verfügbar. Bitte nutze einen aktuellen Desktop-Browser (Chrome, Edge, Firefox, Safari 16.4+).', 'WebGL2 is not available. Please use a current desktop browser (Chrome, Edge, Firefox, Safari 16.4+).'],
+          old: ['Dein Browser ist zu alt für die Insel. Bitte nutze einen aktuellen Desktop-Browser (Chrome, Edge, Firefox, Safari 16.4+).', 'Your browser is too old for the island. Please use a current desktop browser (Chrome, Edge, Firefox, Safari 16.4+).'],
+          touch: ['Das Schwebewerk braucht Maus und Tastatur. Öffne den Link am besten am Laptop oder Desktop.', 'The Floating Works needs a mouse and keyboard. Open the link on a laptop or desktop.'],
+        }[reason];
+        var first = lang === 'en' ? 1 : 0;
+        el.classList.add('gate');
+        el.classList.remove('indet');
+        el.querySelector('.status').textContent = '';
+        var err = el.querySelector('.err');
+        var a = d.createElement('div'); a.className = 'err-title'; a.textContent = T[first];
+        var b = d.createElement('div'); b.className = 'err-hint err-alt'; b.lang = first ? 'de' : 'en'; b.textContent = T[1 - first];
+        err.appendChild(a); err.appendChild(b);
+        if (reason === 'touch') {
+          var btn = d.createElement('button');
+          btn.type = 'button';
+          btn.textContent = first ? 'Load anyway · Trotzdem laden' : 'Trotzdem laden · Load anyway';
+          btn.onclick = pass;
+          el.querySelector('.actions').appendChild(btn);
+        }
+      })();
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+{
+  "name": "fresh",
+  "rule": "§3.5 rule 8 · fresh",
+  "about": "no save at all: nothing to migrate; the first save writes v2, never v1",
+  "params": "mode=entdecker",
+  "retired": [],
+  "storage": {},
+  "expect": {
+    "source": "fresh",
+    "readOnly": false,
+    "v2Written": true,
+    "v1Unchanged": true,
+    "islandStamps": 0,
+    "allStamps": 0,
+    "secrets": 0,
+    "flight": "ground",
+    "liftoffSeen": false,
+    "start": {
+      "glideSeen": false,
+      "probestart": false
+    },
+    "systems": {
+      "M1": "kalt",
+      "M2": "kalt",
+      "M3": "kalt",
+      "M4": "kalt",
+      "M5": "kalt",
+      "M6": "kalt",
+      "AKKU": "kalt",
+      "NAV": "kalt",
+      "T1": "aus",
+      "T2": "aus",
+      "T3": "aus",
+      "T4": "aus"
+    },
+    "lift": 0,
+    "energy": {
+      "state": "kalt",
+      "by": null,
+      "charge": 0
+    },
+    "nav": {
+      "state": "kalt",
+      "by": null
+    },
+    "startklar": false,
+    "armed": false,
+    "kielOpen": false,
+    "regionOpen": false,
+    "f3Signed": false,
+    "crew": [],
+    "pool": 84,
+    "stars": 0
+  }
+}

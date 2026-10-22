@@ -1,0 +1,23 @@
+{
+  "name": "emai-robot-pipeline",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Build step for the real robot models (URDF/MJCF + STL/OBJ/DAE -> skinned, quantized, meshopt-compressed GLB). Dev only; never part of the game bundle.",
+  "scripts": {
+    "fetch": "node fetch.mjs",
+    "build": "node build.mjs",
+    "check": "node check.mjs"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "fast-xml-parser": "5.11.2",
+    "gltf-validator": "2.0.0-dev.3.10",
+    "jpeg-js": "0.4.4",
+    "meshoptimizer": "1.3.0",
+    "pngjs": "7.0.0",
+    "three": "0.186.1"
+  }
+}

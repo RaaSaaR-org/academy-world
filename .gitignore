@@ -1,0 +1,9 @@
+node_modules/
+dist/
+artifacts/
+.vite/
+node_modules/.vite*
+*.log
+.DS_Store
+*.tsbuildinfo
+*.tmp.json

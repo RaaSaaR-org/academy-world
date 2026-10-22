@@ -1,0 +1,51 @@
+{
+  "name": "emai-academy-island",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "EmAI Academy Island \u2014 first-person three.js learning world about robots, physics and Physical AI.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "shot": "node tools/shot.mjs",
+    "shots:all": "node tools/shots-all.mjs",
+    "typecheck:zone": "node tools/typecheck-zone.mjs",
+    "playtest": "node tools/playtest.mjs",
+    "perf": "node tools/perf.mjs",
+    "load-matrix": "node tools/load-matrix.mjs",
+    "a11y-keyboard": "node tools/a11y-keyboard.mjs",
+    "contrast": "node tools/contrast.mjs",
+    "dialogue-modal": "node tools/dialogue-modal.mjs",
+    "third-party": "node tools/third-party.mjs",
+    "idle-render": "node tools/idle-render.mjs",
+    "robust-check": "node tools/robust-check.mjs",
+    "perf-cpu": "node tools/perf-cpu.mjs",
+    "progdiag": "node tools/progdiag.mjs",
+    "auto-quality": "node tools/auto-quality.mjs",
+    "gpu-ab": "node tools/gpu-ab.mjs",
+    "warmup": "node tools/warmup.mjs",
+    "drawcalls": "node tools/drawcalls.mjs",
+    "hitches": "node tools/hitches.mjs",
+    "glyph-check": "node tools/glyph-check.mjs",
+    "fonts:subset": "node tools/subset-fonts.mjs",
+    "deploy-check": "node tools/deploy-check.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "0.21.0",
+    "@mujoco/mujoco": "3.16.0",
+    "postprocessing": "6.39.5",
+    "three": "0.186.1",
+    "troika-three-text": "0.52.5"
+  },
+  "devDependencies": {
+    "@types/three": "0.186.0",
+    "playwright": "1.64.1",
+    "typescript": "7.0.2",
+    "vite": "8.3.4"
+  }
+}

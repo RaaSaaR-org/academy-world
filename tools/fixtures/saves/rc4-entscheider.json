@@ -1,0 +1,649 @@
+{
+  "name": "rc4-entscheider",
+  "rule": "§3.5 rule 8 · Entscheider",
+  "about": "an rc4 manager with the six ◆ and F3 signed (captured): the Bodencrew supplies AKKU and NAV at once (the Probestart follows from the island stamps), so the lift-off is armed (D23, D38)",
+  "params": "mode=entscheider",
+  "retired": [],
+  "storage": {
+    "progress": {
+      "v": 1,
+      "mode": "entscheider",
+      "stamps": {
+        "sensordom.messstrecke": {
+          "t": 1792285794016,
+          "value": {
+            "de": "σ(6 m) = 6,5 cm · Gegenlicht ×3,1",
+            "en": "σ(6 m) = 6.5 cm · backlight ×3.1"
+          },
+          "skipped": false,
+          "curve": [
+            1.9,
+            15.8,
+            64.6,
+            154
+          ]
+        },
+        "regelgarten.regler-takt": {
+          "t": 1792285800537,
+          "value": {
+            "de": "Fällt bei 10 Hz · stabil ab 200 Hz · Latenzgrenze nicht gemessen",
+            "en": "Falls at 10 Hz · stable from 200 Hz · latency limit not measured"
+          },
+          "skipped": false,
+          "curve": [
+            1,
+            1,
+            0.5,
+            0.5,
+            0,
+            0.5
+          ]
+        },
+        "greifwerkstatt.griffe": {
+          "t": 1792285807050,
+          "value": {
+            "de": "Kamera 54 % [47–60] · +Taktil 86 % [81–90] · n = 200",
+            "en": "Camera 54 % [47–60] · +tactile 86 % [81–90] · n = 200"
+          },
+          "skipped": false,
+          "curve": [
+            60,
+            56,
+            58,
+            58,
+            55,
+            52,
+            51,
+            52,
+            54,
+            53
+          ]
+        },
+        "lern-dojo.vormachen": {
+          "t": 1792285813581,
+          "value": {
+            "de": "5 Demos · Ø 3,8 s",
+            "en": "5 demos · avg 3.8 s"
+          },
+          "skipped": false,
+          "curve": [
+            4.4,
+            3.34,
+            4.44,
+            3.38,
+            3.66
+          ]
+        },
+        "lern-dojo.nachmachen": {
+          "t": 1792285813619,
+          "value": {
+            "de": "Training ✓ · neue Lage ✗ → +2 Demos → ✓",
+            "en": "Training ✓ · new pose ✗ → +2 demos → ✓"
+          },
+          "skipped": false,
+          "curve": [
+            1,
+            0,
+            1
+          ]
+        },
+        "dunkelfabrik.lichtaus": {
+          "t": 1792285820136,
+          "value": {
+            "de": "autonomer Anteil 44 % · 111 Eingriffe/h · begrenzt durch Umreifen",
+            "en": "autonomous share 44 % · 111 interventions/h · limited by strapping"
+          },
+          "skipped": false,
+          "curve": [
+            0.4388888888888889,
+            0.43333333333333335,
+            0.45555555555555555,
+            0.3888888888888889,
+            0.4388888888888889,
+            0.5055555555555555,
+            0.4666666666666667,
+            0.42777777777777776
+          ]
+        },
+        "prueffeld.unter-last": {
+          "t": 1792285826654,
+          "value": {
+            "de": "69 % ± 6 % · n = 200 · 44 °C",
+            "en": "69% ± 6% · n = 200 · 44 °C"
+          },
+          "skipped": false,
+          "curve": [
+            0.76,
+            0.68,
+            0.76,
+            0.8,
+            0.72,
+            0.72,
+            0.48,
+            0.6
+          ]
+        }
+      },
+      "visited": {
+        "regelgarten": 1792285798996,
+        "greifwerkstatt": 1792285805529,
+        "lern-dojo": 1792285812028,
+        "dunkelfabrik": 1792285818612,
+        "prueffeld": 1792285825129
+      },
+      "zoneData": {
+        "world": {
+          "onboarding": 3,
+          "logoShown": 6,
+          "finale": {
+            "announced": true,
+            "visited": true,
+            "f1": {
+              "max": 2.56,
+              "over": 0,
+              "settle": 0.02,
+              "held": true
+            },
+            "f2": {
+              "seed": 2246822519,
+              "tally": {
+                "nn": {
+                  "ruhig": {
+                    "k": 67,
+                    "n": 67
+                  },
+                  "boeig": {
+                    "k": 60,
+                    "n": 67
+                  },
+                  "sturm": {
+                    "k": 25,
+                    "n": 66
+                  }
+                },
+                "bestand": {
+                  "ruhig": {
+                    "k": 67,
+                    "n": 67
+                  },
+                  "boeig": {
+                    "k": 65,
+                    "n": 67
+                  },
+                  "sturm": {
+                    "k": 61,
+                    "n": 66
+                  }
+                }
+              },
+              "predicted": 70,
+              "sturmSeen": false
+            },
+            "f3": {
+              "rec": "pilotCond",
+              "reasons": [
+                "nnSturm"
+              ],
+              "alt": "mrc",
+              "sentence": {
+                "de": "Empfehlung: Pilot mit Auflage. Grund: NN-Lage v2 hält 38 % [27–50] bei Sturm (n = 66). Alternativ: NN nur bei ruhigem Wetter, sonst automatisch zurück auf Bestand.",
+                "en": "Recommendation: Pilot with conditions. Reason: NN-Lage v2 holds 38 % [27–50] in a storm (n = 66). Alternatively: NN in calm weather only, otherwise automatic fallback to the current controller."
+              }
+            },
+            "ended": false,
+            "name": "",
+            "yearLater": true
+          },
+          "liftAt": "kiel"
+        },
+        "sensordom": {
+          "runs": [
+            {
+              "z": 1,
+              "light": "labor",
+              "errs": [
+                -0.2091123406563976,
+                -3.1361990848435375,
+                4.6777776591261375,
+                -0.27188746033175204,
+                -0.5050324576797928,
+                2.5478142217433364,
+                0.019715087151539572,
+                -2.7481112193686643,
+                1.001298506574062,
+                0.15777376239747282,
+                -0.39686207771155,
+                2.4845010869737756,
+                2.8903731554455963,
+                -0.3562012301675469,
+                -1.207613625596329,
+                0.7422852319372562,
+                2.2146167640385843,
+                -1.1469650730311902,
+                2.1826510957900966,
+                2.8644741164265244,
+                1.0310375521759136,
+                1.1211096690371951,
+                1.5952175786235792,
+                -3.234555199397619,
+                1.4180300952974882,
+                -1.1980664130117884,
+                -0.19268128245877114,
+                2.2504985239120914,
+                1.9952682400953188,
+                0.43317160958502626
+              ],
+              "drop": 0
+            },
+            {
+              "z": 3,
+              "light": "labor",
+              "errs": [
+                22.25408158660968,
+                2.194593214402219,
+                -27.58359145072437,
+                -1.9526292372472431,
+                -5.874474373256212,
+                -1.6749106576849933,
+                2.427338158299702,
+                12.843138278638449,
+                4.98826063185727,
+                26.667427028007822,
+                -3.500192115964675,
+                -14.371576965422879,
+                14.217229032349382,
+                -20.967992042369723,
+                -13.70898919809829,
+                -31.05158036526969,
+                1.5808927707681233,
+                4.0057996218183645,
+                17.861563540613766,
+                16.04071573791533,
+                -19.649831965926975,
+                13.712891955200055,
+                -25.392730159489936,
+                -20.640706680233908,
+                0.23648345202873217,
+                24.74655334439022,
+                3.251849332417946,
+                3.5992272805870553,
+                -12.881548709347257,
+                2.8246806915656197
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "labor",
+              "errs": [
+                14.339715769730933,
+                9.973028935266669,
+                -12.03425762203048,
+                17.58357255029821,
+                29.17244782514284,
+                88.86605267533321,
+                2.041512023962026,
+                -13.49139201669169,
+                -88.35318427392713,
+                34.29886369794632,
+                -45.485038993635115,
+                -82.54457839985372,
+                -112.34380371648561,
+                -32.336764068439834,
+                111.50545754291028,
+                61.91754041996124,
+                -26.028539675172023,
+                51.682692808383905,
+                63.72205490770134,
+                23.073991953814016,
+                41.16209599720258,
+                -94.33906220511422,
+                -50.099055263887834,
+                -109.22475135893887,
+                108.04013981175503,
+                61.41159122164639,
+                40.700660069601575,
+                23.01341024302489,
+                -69.3259584229001,
+                93.93146213388931
+              ],
+              "drop": 0
+            },
+            {
+              "z": 9,
+              "light": "labor",
+              "errs": [
+                -86.04771949398825,
+                71.35099411128951,
+                -97.64366235216116,
+                -7.2398409224133236,
+                137.31806000893624,
+                225.94776079895942,
+                -204.19385691413555,
+                74.77299837476343,
+                190.05185771359743,
+                -180.9902077335662,
+                94.35375402597725,
+                -135.82928952938587,
+                -58.59973576850425,
+                39.61329669495706,
+                -133.13445539234743,
+                155.24954998484307,
+                -252.33589307318144,
+                -8.751458075491483,
+                53.13979713784371,
+                60.35024179518755,
+                340.2638641134257,
+                121.56346510797768,
+                414.5378893320854,
+                41.88037091335019,
+                -31.234536003232606,
+                219.88740109632138,
+                -62.208501232627434,
+                -28.960426933286353,
+                -62.41256499803084,
+                61.08264292158571
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "gegen",
+              "errs": [
+                108.58162138272014,
+                -36.415728689328816,
+                -308.2814606037225,
+                78.68770159895928,
+                -92.56932872173793,
+                -267.7058360200831,
+                -58.50267820748392,
+                -58.43130717227095,
+                236.0890510190246,
+                9.161041226591507,
+                215.79035394089516,
+                -162.8499506065248,
+                -65.12198918625516,
+                -336.2781713510071,
+                112.13235035275903,
+                220.69314171749406,
+                242.0705209327616,
+                85.42833189042891,
+                384.2914127782988,
+                -210.90673670178342
+              ],
+              "drop": 10
+            }
+          ],
+          "grip": {
+            "labor": 6,
+            "gegen": 3,
+            "judged": true
+          }
+        },
+        "regelgarten": {
+          "greeted": true,
+          "bPredicted": 20,
+          "b": {
+            "fallsAt": [
+              10
+            ],
+            "fallsTuned": [
+              10
+            ],
+            "stableAt": [
+              1000,
+              200
+            ],
+            "latFallMin": null,
+            "sawSlowFall": true,
+            "latHold": null
+          }
+        },
+        "greifwerkstatt": {
+          "greeted": true,
+          "cPredRun": {
+            "k": 10,
+            "n": 20
+          },
+          "cRuns": [
+            {
+              "s": "k",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "obrooorbrboobobooobb"
+            },
+            {
+              "s": "t",
+              "n": 20,
+              "c": 0,
+              "v": 0,
+              "o": "ororoooooooooroooboo"
+            },
+            {
+              "s": "k",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oroorobrboboorobobooobobororoorooboroooooobrbrbooooooororoooorbbrbobbrbororoobbobooborobboobobrorboorobbrrrrorroborobrboooroobboborbooobooobooroboorobbooooooboboobooooorroboobbrbbboboorbrooooooobbbboo"
+            },
+            {
+              "s": "t",
+              "n": 200,
+              "c": 0,
+              "v": 0,
+              "o": "oboooooooooooobroroooooooooooooobooooooooooooooooooooooooooooboooooooorooooobrooooooobooooboooooooooooooorooooooooooboooooooooooooroooooooobroooroooroooorooooobroooooorooooooobooroooooooooooooobrbrooo"
+            }
+          ]
+        },
+        "lern-dojo": {
+          "greeted": true
+        },
+        "dunkelfabrik": {
+          "greeted": true,
+          "levels": [
+            4,
+            3,
+            3,
+            4,
+            1,
+            2
+          ],
+          "honestNight": true,
+          "share": 0.4444444444444444
+        },
+        "prueffeld": {
+          "greeted": true,
+          "shutter": true,
+          "docked": true,
+          "predicted": 150,
+          "predictedN": 200,
+          "lastRun": {
+            "s": {
+              "tempC": 44,
+              "vib": 1,
+              "light": "halle",
+              "shiftH": 8,
+              "n": 200
+            },
+            "o": "00002001003200000300030003032000000030002000100303500020010000200000000030500500000100000020301000000000400300052004100000040002400000003000000231003020240000022004055240320402050000020230504100010002"
+          },
+          "predRecorded": true,
+          "trials": 200
+        }
+      },
+      "predictions": {
+        "sensordom.messstrecke": {
+          "predicted": 12,
+          "measured": 64.61202008186672,
+          "min": 2,
+          "max": 150,
+          "scale": "log",
+          "deviation": 38.99243654643542
+        },
+        "regelgarten.regler-takt": {
+          "predicted": 20,
+          "measured": 10,
+          "min": 5,
+          "max": 200,
+          "scale": "log",
+          "deviation": 18.79018247091076
+        },
+        "greifwerkstatt.griffe": {
+          "predicted": 20,
+          "measured": 10,
+          "min": 0,
+          "max": 20,
+          "scale": "linear",
+          "deviation": 50
+        },
+        "dunkelfabrik.lichtaus": {
+          "predicted": 50,
+          "measured": 44.44444444444444,
+          "min": 0,
+          "max": 100,
+          "scale": "linear",
+          "deviation": 5.555555555555557
+        },
+        "prueffeld.unter-last": {
+          "predicted": 150,
+          "measured": 138,
+          "min": 0,
+          "max": 200,
+          "scale": "linear",
+          "deviation": 6
+        }
+      },
+      "questions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "album": [],
+      "best": {
+        "sensordom.sigma6": 64.6,
+        "lowestStableTakt": 200,
+        "oodDemos": 2,
+        "autonomousShare": 44.44444444444444,
+        "trialsMeasured": 200
+      },
+      "challenges": {
+        "sensordom.messstrecke": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285794018
+        },
+        "regelgarten.regler-takt": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285800539
+        },
+        "greifwerkstatt.griffe": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285807052
+        },
+        "lern-dojo.vormachen": {
+          "best": 3.843999999999999,
+          "stars": 2,
+          "attempts": 1,
+          "last": 3.843999999999999,
+          "t": 1792285813582
+        },
+        "lern-dojo.nachmachen": {
+          "best": null,
+          "stars": 3,
+          "attempts": 2,
+          "last": null,
+          "t": 1792285813621
+        },
+        "dunkelfabrik.lichtaus": {
+          "best": 44.44444444444444,
+          "stars": 3,
+          "attempts": 1,
+          "last": 44.44444444444444,
+          "t": 1792285820137
+        },
+        "prueffeld.unter-last": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285826655
+        },
+        "world.f1": {
+          "best": 0,
+          "stars": 3,
+          "attempts": 1,
+          "last": 0,
+          "t": 1792285862412
+        }
+      },
+      "collectibles": [],
+      "lastZone": "prueffeld"
+    }
+  },
+  "expect": {
+    "source": "v1",
+    "readOnly": false,
+    "v2Written": true,
+    "v1Unchanged": true,
+    "islandStamps": 7,
+    "mode": "entscheider",
+    "flight": "ground",
+    "start": {
+      "glideSeen": true,
+      "probestart": true
+    },
+    "systems": {
+      "M1": "bereit",
+      "M2": "bereit",
+      "M3": "bereit",
+      "M4": "bereit",
+      "M5": "bereit",
+      "M6": "bereit",
+      "AKKU": "bereit",
+      "NAV": "bereit",
+      "T2": "aus",
+      "T3": "aus"
+    },
+    "lift": 6,
+    "energy": {
+      "state": "bereit",
+      "by": "crew",
+      "charge": 1
+    },
+    "nav": {
+      "state": "bereit",
+      "by": "crew"
+    },
+    "startklar": true,
+    "armed": true,
+    "kielOpen": true,
+    "regionOpen": true,
+    "f3Signed": true,
+    "crew": [
+      "AKKU:route",
+      "NAV:route"
+    ],
+    "world": {
+      "sky": "day",
+      "logoShown": 7
+    },
+    "worldAbsent": [],
+    "pool": 84,
+    "stars": 15
+  }
+}

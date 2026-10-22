@@ -1,0 +1,573 @@
+{
+  "name": "rc4-mid",
+  "rule": "§3.5 rule 8 · mid-route",
+  "about": "rc4 Entdecker after three zones (captured with the solve hooks): seven stamps plus one skipped, M1 geprüft, M2 bereit, M3 in Arbeit",
+  "params": "mode=entdecker",
+  "retired": [],
+  "storage": {
+    "progress": {
+      "v": 1,
+      "mode": "entdecker",
+      "stamps": {
+        "sensordom.messbrille": {
+          "t": 1792285540334,
+          "value": {
+            "de": "5/5 · 4 Sensorbilder genutzt",
+            "en": "5/5 · 4 sensor views used"
+          },
+          "skipped": false,
+          "curve": [
+            2,
+            1,
+            1,
+            1
+          ]
+        },
+        "sensordom.dunkelkammer": {
+          "t": 1792285542343,
+          "value": {
+            "de": "Ausgang in 72 s · 1 Glaskontakt",
+            "en": "Exit in 72 s · 1 glass contact"
+          },
+          "skipped": false,
+          "curve": [
+            72,
+            1
+          ]
+        },
+        "sensordom.messstrecke": {
+          "t": 1792285544351,
+          "value": {
+            "de": "σ(6 m) = 7,8 cm · Gegenlicht ×1,8",
+            "en": "σ(6 m) = 7.8 cm · backlight ×1.8"
+          },
+          "skipped": false,
+          "curve": [
+            1.9,
+            18.3,
+            78.3,
+            176.8
+          ]
+        },
+        "regelgarten.balancieren": {
+          "t": 1792285550876,
+          "value": {
+            "de": "2 m: 5,8 s (Mond) · 0,5 m: 5,8 s (Mond) · Mond probiert",
+            "en": "2 m: 5.8 s (Moon) · 0.5 m: 5.8 s (Moon) · Moon tried"
+          },
+          "skipped": false,
+          "curve": [
+            5.816000000000277,
+            5.816000000000277,
+            5.816000000000277
+          ]
+        },
+        "regelgarten.regler-takt": {
+          "t": 1792285552888,
+          "value": {
+            "de": "Fällt bei 10 Hz · stabil ab 200 Hz · Latenzgrenze nicht gemessen",
+            "en": "Falls at 10 Hz · stable from 200 Hz · latency limit not measured"
+          },
+          "skipped": false,
+          "curve": [
+            1,
+            1,
+            0.5,
+            0.5,
+            0,
+            0.5
+          ]
+        },
+        "greifwerkstatt.gelenke": {
+          "t": 1792285564470,
+          "value": {
+            "de": "3/3 Ringe · 0:04 min · Ziel",
+            "en": "3/3 rings · 0:04 min · target"
+          },
+          "skipped": false,
+          "curve": [
+            0,
+            1,
+            2,
+            3
+          ]
+        },
+        "greifwerkstatt.ei": {
+          "t": 1792285572786,
+          "value": {
+            "de": "Ei: 5,0 N gehalten · nasses Glas/Stahl rutscht unter 23,6 N",
+            "en": "Egg: 5.0 N held · wet glass/steel slips below 23.6 N"
+          },
+          "skipped": false,
+          "curve": [
+            5.0063450025763245,
+            23.62
+          ]
+        },
+        "lern-dojo.vormachen": {
+          "t": 1792285632786,
+          "skipped": true
+        }
+      },
+      "visited": {
+        "regelgarten": 1792285549336,
+        "greifwerkstatt": 1792285557870
+      },
+      "zoneData": {
+        "world": {
+          "onboarding": 3,
+          "logoShown": 3,
+          "ascentSeen": true
+        },
+        "sensordom": {
+          "tags": [
+            [
+              "becher",
+              "tiefe"
+            ],
+            [
+              "flasche",
+              "rgb"
+            ],
+            [
+              "samt",
+              "lidar"
+            ],
+            [
+              "kabel",
+              "seg"
+            ],
+            [
+              "spiegel",
+              "rgb"
+            ]
+          ],
+          "revealed": true,
+          "runs": [
+            {
+              "z": 1,
+              "light": "labor",
+              "errs": [
+                -2.0406715106839592,
+                -3.1513453844217714,
+                0.6875394530115668,
+                0.8940282335736824,
+                0.6001030564795405,
+                -1.6350397428270098,
+                0.6172618178820549,
+                -0.22612629263895298,
+                1.9449945211043898,
+                3.3077712777075585,
+                1.8735630072730844,
+                3.5389131055644047,
+                -1.368467671327293,
+                -0.7998942373019646,
+                0.39646961033648953,
+                0.4817833835212267,
+                3.169097190499131,
+                -1.8511395157333,
+                -1.7184735499272912,
+                -1.025438103847132,
+                -3.045576644526322,
+                -0.43912576136284404,
+                1.6048779878509682,
+                -1.9571443527463903,
+                2.1964431993640146,
+                1.376900202504627,
+                2.556669360500016,
+                -1.7402854680936846,
+                0.30908918391117896,
+                0.692285616015554
+              ],
+              "drop": 0
+            },
+            {
+              "z": 3,
+              "light": "labor",
+              "errs": [
+                22.23387476665816,
+                9.815234405096842,
+                -0.16236349582652046,
+                -41.31704320921298,
+                33.45557748585921,
+                -20.741565933456133,
+                -5.780048500055422,
+                17.61981559893109,
+                7.514483149412146,
+                -5.551175624473205,
+                -7.475404499735315,
+                -13.38721527807705,
+                -10.438528903293605,
+                -5.929444932251064,
+                -30.466072996627464,
+                -13.440365909449438,
+                37.15082690117752,
+                8.522061641973975,
+                1.96989885791853,
+                0.01234776554317718,
+                10.985506503656987,
+                12.923590297217643,
+                -24.05304032395894,
+                -8.515477906188806,
+                14.704065226807778,
+                3.208660061953521,
+                3.3144189928826866,
+                14.24322948775178,
+                -33.31731516908152,
+                4.122631265129607
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "labor",
+              "errs": [
+                -68.57689278533554,
+                1.6317047961632873,
+                58.120210659227254,
+                17.608066430887856,
+                54.54986486551506,
+                -89.28861064901275,
+                23.26986137729376,
+                117.8035688330766,
+                -29.55127430453676,
+                -202.85487586097145,
+                31.29772022167808,
+                -3.094373179603921,
+                -44.3778649042175,
+                -50.28682530688345,
+                6.0147258021889085,
+                15.109685057709449,
+                -150.0851390743399,
+                -55.34869002953249,
+                30.682392131676963,
+                63.05494951490742,
+                102.14989619676642,
+                -99.59046362454859,
+                36.895337277934594,
+                -111.15918859918008,
+                64.59829634098783,
+                -85.386556591395,
+                74.0776604048834,
+                -109.05521080024515,
+                -42.03937278004214,
+                75.20587198710405
+              ],
+              "drop": 0
+            },
+            {
+              "z": 9,
+              "light": "labor",
+              "errs": [
+                7.820805096683994,
+                18.883103404844114,
+                -17.4747951451132,
+                -116.51515705581573,
+                40.85236985859423,
+                243.7084024406106,
+                -242.6558119434701,
+                297.043158860032,
+                247.79880034529387,
+                206.99642395236978,
+                125.95482965027303,
+                158.5866708087598,
+                -4.760646377368409,
+                -10.89652083836563,
+                -330.3444688294986,
+                -271.8447600825927,
+                -22.374826667334677,
+                -338.37728814918546,
+                -137.59197553733756,
+                192.88357535334816,
+                175.88276316322748,
+                36.51011405006603,
+                116.79826857978378,
+                68.64372855811457,
+                107.32100789661321,
+                262.7890674652959,
+                -241.93887884663346,
+                2.8876790312166705,
+                -58.549168106482306,
+                25.853278249609637
+              ],
+              "drop": 0
+            },
+            {
+              "z": 6,
+              "light": "gegen",
+              "errs": [
+                249.8208803086106,
+                -68.16969066424592,
+                -107.9568893094349,
+                222.07056495150604,
+                37.814709464556564,
+                66.41222336320038,
+                22.75389188891813,
+                165.74774316895753,
+                274.3909971414468,
+                -11.576338399703884,
+                -16.41010396308651,
+                -126.48672592621965,
+                140.1245261760266,
+                64.61454350731657,
+                132.6304849074737,
+                -164.4821525569089,
+                354.24112538138985,
+                179.33739299856103,
+                -113.46864839665992,
+                72.68688817945198,
+                56.299678516338275,
+                -62.623246418582625,
+                -56.001736584283115,
+                233.923225950974,
+                -48.959854215358945,
+                111.83259312971373
+              ],
+              "drop": 4
+            }
+          ],
+          "grip": {
+            "labor": 6,
+            "gegen": 3,
+            "judged": true
+          }
+        },
+        "regelgarten": {
+          "greeted": true,
+          "a": {
+            "best": {
+              "0.5@mond": 5.816000000000277,
+              "1@mars": 5.816000000000277,
+              "2@mond": 5.816000000000277
+            },
+            "tried": [
+              5.816000000000277,
+              5.816000000000277,
+              5.816000000000277
+            ],
+            "moon": true,
+            "longest": 5.816000000000277,
+            "fails": 3,
+            "ach2": false,
+            "ach3": false,
+            "earth": false
+          },
+          "bPredicted": 20,
+          "b": {
+            "fallsAt": [
+              10
+            ],
+            "fallsTuned": [
+              10
+            ],
+            "stableAt": [
+              1000,
+              200
+            ],
+            "latFallMin": null,
+            "sawSlowFall": true,
+            "latHold": null
+          }
+        },
+        "greifwerkstatt": {
+          "greeted": true,
+          "aSkipped": false,
+          "bTally": {
+            "ok": 1,
+            "broken": 0,
+            "best": 0,
+            "bestBand": 0
+          }
+        }
+      },
+      "predictions": {
+        "sensordom.messstrecke": {
+          "predicted": 12,
+          "measured": 78.3121173532147,
+          "min": 2,
+          "max": 150,
+          "scale": "log",
+          "deviation": 43.446458852387224
+        },
+        "regelgarten.regler-takt": {
+          "predicted": 20,
+          "measured": 10,
+          "min": 5,
+          "max": 200,
+          "scale": "log",
+          "deviation": 18.79018247091076
+        }
+      },
+      "questions": [
+        4,
+        9
+      ],
+      "album": [],
+      "best": {
+        "sensordom.darkroomTime": 72,
+        "sensordom.sigma6": 78.3,
+        "balance.0.5m.mond": 5.816000000000277,
+        "balance.1m.mars": 5.816000000000277,
+        "balance.2m.mond": 5.816000000000277,
+        "lowestStableTakt": 200
+      },
+      "challenges": {
+        "sensordom.messbrille": {
+          "best": 1,
+          "stars": 1,
+          "attempts": 1,
+          "last": 1,
+          "t": 1792285540335
+        },
+        "sensordom.dunkelkammer": {
+          "best": 72,
+          "stars": 1,
+          "attempts": 1,
+          "last": 72,
+          "t": 1792285542345
+        },
+        "sensordom.messstrecke": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285544354
+        },
+        "regelgarten.balancieren": {
+          "best": 5.8,
+          "stars": 1,
+          "attempts": 1,
+          "last": 5.8,
+          "t": 1792285550878
+        },
+        "regelgarten.regler-takt": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285552890
+        },
+        "greifwerkstatt.gelenke": {
+          "best": null,
+          "stars": 1,
+          "attempts": 1,
+          "last": null,
+          "t": 1792285564472
+        },
+        "greifwerkstatt.ei": {
+          "best": 0,
+          "stars": 1,
+          "attempts": 1,
+          "last": 0,
+          "t": 1792285572788
+        }
+      },
+      "collectibles": [],
+      "lastZone": "greifwerkstatt"
+    }
+  },
+  "expect": {
+    "source": "v1",
+    "readOnly": false,
+    "v2Written": true,
+    "v1Unchanged": true,
+    "islandStamps": 7,
+    "allStamps": 7,
+    "legacyStamps": [],
+    "legacyChallenges": [],
+    "legacyPredictions": [],
+    "secrets": 0,
+    "mode": "entdecker",
+    "flight": "ground",
+    "liftoffSeen": false,
+    "start": {
+      "glideSeen": true,
+      "probestart": true
+    },
+    "systems": {
+      "M1": "geprueft",
+      "M2": "bereit",
+      "M3": "arbeit",
+      "M4": "kalt",
+      "M5": "kalt",
+      "M6": "kalt",
+      "AKKU": "kalt",
+      "NAV": "kalt",
+      "T1": "aus",
+      "T2": "aus",
+      "T3": "aus",
+      "T4": "aus"
+    },
+    "lift": 2,
+    "energy": {
+      "state": "kalt",
+      "by": null,
+      "charge": 0
+    },
+    "nav": {
+      "state": "kalt",
+      "by": null
+    },
+    "startklar": false,
+    "armed": false,
+    "kielOpen": false,
+    "regionOpen": true,
+    "f3Signed": false,
+    "crew": [],
+    "world": {
+      "sky": "day",
+      "logoShown": 7,
+      "onboarding": 3
+    },
+    "worldAbsent": [
+      "ascentSeen"
+    ],
+    "keep": [
+      {
+        "path": [
+          "lastZone"
+        ],
+        "value": "greifwerkstatt"
+      },
+      {
+        "path": [
+          "questions"
+        ],
+        "value": [
+          4,
+          9
+        ]
+      },
+      {
+        "path": [
+          "best",
+          "lowestStableTakt"
+        ],
+        "value": 200
+      },
+      {
+        "path": [
+          "stamps",
+          "lern-dojo.vormachen",
+          "skipped"
+        ],
+        "value": true
+      },
+      {
+        "path": [
+          "zoneData",
+          "world",
+          "p7.quest",
+          "flight"
+        ],
+        "value": {
+          "state": "ground",
+          "firstFlightAt": null,
+          "liftoffSeen": false
+        }
+      }
+    ],
+    "pool": 84,
+    "stars": 7
+  }
+}

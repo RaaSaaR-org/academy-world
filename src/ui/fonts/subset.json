@@ -1,0 +1,119 @@
+{
+ "tool": "tools/subset-fonts.mjs",
+ "note": "generated: do not edit; rerun the tool after a new character appears in the strings",
+ "features": [
+  "calt",
+  "ccmp",
+  "clig",
+  "curs",
+  "dnom",
+  "frac",
+  "kern",
+  "liga",
+  "locl",
+  "mark",
+  "mkmk",
+  "numr",
+  "rlig",
+  "rvrn",
+  "subs",
+  "sups",
+  "tnum",
+  "pnum",
+  "lnum",
+  "case",
+  "ordn",
+  "sinf"
+ ],
+ "keepRanges": [
+  "U+0020-U+007E",
+  "U+00A0-U+00FF",
+  "U+0100-U+017F",
+  "U+2010-U+2027",
+  "U+2030-U+203A",
+  "U+2070-U+2079",
+  "U+2080-U+2089",
+  "U+20AC-U+20AC",
+  "U+2190-U+2195",
+  "U+2212-U+2212",
+  "U+2248-U+2248",
+  "U+2260-U+2265"
+ ],
+ "extra": "ΔΣθκλμπστᵢ⁻⇕∅√∝∞␣ⓘ■▮▯▲▶▸▾◀◆○●◠★✓✔✕✖✗⟦⟧",
+ "fonts": {
+  "Geist-Bold.woff2": {
+   "sourceSha256": "b03acd112f0b8ac2",
+   "fullBytes": 46656,
+   "subsetBytes": 21896,
+   "codepoints": 363,
+   "ofFull": 726
+  },
+  "Geist-Medium.woff2": {
+   "sourceSha256": "f2ba08f203f97734",
+   "fullBytes": 46472,
+   "subsetBytes": 21668,
+   "codepoints": 363,
+   "ofFull": 726
+  },
+  "Geist-Regular.woff": {
+   "sourceSha256": "78996fad1cd46fd1",
+   "fullBytes": 58932,
+   "subsetBytes": 25936,
+   "codepoints": 363,
+   "ofFull": 726
+  },
+  "Geist-SemiBold.woff": {
+   "sourceSha256": "1e0699dc33010382",
+   "fullBytes": 60640,
+   "subsetBytes": 26788,
+   "codepoints": 363,
+   "ofFull": 726
+  },
+  "GeistMono-Bold.woff2": {
+   "sourceSha256": "9a7d7892c4969108",
+   "fullBytes": 51744,
+   "subsetBytes": 18696,
+   "codepoints": 362,
+   "ofFull": 887
+  },
+  "GeistMono-Medium.woff": {
+   "sourceSha256": "9c4e1a9c85b730b2",
+   "fullBytes": 68196,
+   "subsetBytes": 23176,
+   "codepoints": 362,
+   "ofFull": 887
+  },
+  "GeistMono-Regular.woff": {
+   "sourceSha256": "ceb39289cbe2dc73",
+   "fullBytes": 66800,
+   "subsetBytes": 22760,
+   "codepoints": 362,
+   "ofFull": 887
+  },
+  "SpaceGrotesk-Bold.woff": {
+   "sourceSha256": "7104dd279863c0b6",
+   "fullBytes": 55300,
+   "subsetBytes": 29024,
+   "codepoints": 374,
+   "ofFull": 731
+  },
+  "SpaceGrotesk-Medium.woff": {
+   "sourceSha256": "9a9b4ee2ab065c2c",
+   "fullBytes": 56676,
+   "subsetBytes": 29796,
+   "codepoints": 374,
+   "ofFull": 731
+  },
+  "SpaceGrotesk-Regular.woff2": {
+   "sourceSha256": "63fc7c238329fb08",
+   "fullBytes": 42632,
+   "subsetBytes": 23976,
+   "codepoints": 374,
+   "ofFull": 731
+  }
+ },
+ "totalBytes": {
+  "full": 554048,
+  "subset": 243716
+ }
+}
